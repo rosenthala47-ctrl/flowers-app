@@ -1,7 +1,8 @@
 {
   "name": "Flowers App",
   "short_name": "Flowers",
-  "start_url": "flowers-pwa.html",
+  "start_url": "/flowers-app/index.html",
+  "scope": "/flowers-app/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#000000",
