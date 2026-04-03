@@ -475,6 +475,22 @@ renderShop();
     background: #c75b7e;
   }
 </style>
+  <div class="order-form">
+  <h3>🌸 הזמנה לשישי הקרוב</h3>
+  
+  <label>בחר גודל זר:</label>
+  <select id="bundle">
+    <option value="זר קטן (100 ש״ח)">זר קטן - 100 ש״ח</option>
+    <option value="זר בינוני (150 ש״ח)">זר בינוני - 150 ש״ח</option>
+    <option value="זר גדול (200 ש״ח)">זר גדול - 200 ש״ח</option>
+  </select>
+  
+  <input type="text" id="custName" placeholder="השם המלא שלך">
+  <input type="text" id="address" placeholder="כתובת מלאה למשלוח">
+  <textarea id="blessing" rows="3" placeholder="ברכה קצרה לצרף לזר (אופציונלי)"></textarea>
+  
+  <button class="order-btn" onclick="sendOrder()">בצע הזמנה בוואטסאפ</button>
+</div>
   <a href="https://wa.me/972512626522?text=היי,%20אני%20רוצה%20להזמין%20זר%20פרחים%20לשישי%20הקרוב!" class="whatsapp-button">
 <div class="order-form">
   <h3>🌸 הזמנה לשישי הקרוב</h3>
