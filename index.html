@@ -434,8 +434,78 @@ renderShop();
   .whatsapp-button:hover {
     background-color: #128c7e;
   }
+    .order-form {
+    max-width: 400px;
+    margin: 40px auto;
+    padding: 25px;
+    background: #ffffff;
+    border: 2px solid #db7093;
+    border-radius: 15px;
+    direction: rtl;
+    font-family: sans-serif;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  }
+  .order-form h3 {
+    color: #db7093;
+    text-align: center;
+    margin-top: 0;
+  }
+  .order-form input, .order-form select, .order-form textarea {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-sizing: border-box; /* חשוב כדי שהשדות לא יצאו מהמסגרת */
+    font-size: 16px;
+  }
+  .order-btn {
+    width: 100%;
+    background: #db7093;
+    color: white;
+    border: none;
+    padding: 15px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: 0.3s;
+  }
+  .order-btn:hover {
+    background: #c75b7e;
+  }
 </style>
-  <a href="https://wa.me/0512626522?text=היי,%20אני%20רוצה%20להזמין%20זר%20פרחים%20לשישי%20הקרוב!" class="whatsapp-button">
+  <a href="https://wa.me/972512626522?text=היי,%20אני%20רוצה%20להזמין%20זר%20פרחים%20לשישי%20הקרוב!" class="whatsapp-button">
+<div class="order-form">
+  <h3>🌸 הזמנה לשישי הקרוב</h3>
+  <label>בחר גודל זר:</label>
+  function sendOrder() {
+  const bundle = document.getElementById('bundle').value;
+  const name = document.getElementById('custName').value;
+  const address = document.getElementById('address').value;
+  const blessing = document.getElementById('blessing').value;
+  
+  const phone = "972512626522"; 
+  
+  const message = היי, אני רוצה להזמין זר מהאתר!%0A%0A +
+                  🌸 *גודל הזר:* ${bundle}%0A +
+                  👤 *שם המזמין:* ${name}%0A +
+                  📍 *כתובת:* ${address}%0A +
+                  📝 *ברכה:* ${blessing || "ללא ברכה"};
+  window.open(https://wa.me/${phone}?text=${message}, '_blank');
+}
+  <select id="bundle">
+    <option value="זר קטן (100 ש״ח)">זר קטן - 100 ש״ח</option>
+    <option value="זר בינוני (150 ש״ח)">זר בינוני - 150 ש״ח</option>
+    <option value="זר גדול (200 ש״ח)">זר גדול - 200 ש״ח</option>
+  </select>
+  
+  <input type="text" id="custName" placeholder="השם המלא שלך">
+  <input type="text" id="address" placeholder="כתובת מלאה למשלוח">
+  <textarea id="blessing" rows="3" placeholder="ברכה קצרה לצרף לזר (אופציונלי)"></textarea>
+  <button class="order-btn" onclick="sendOrder()">בצע הזמנה בוואטסאפ</button>
+</div>
+    
   💬 הזמנה בוואטסאפ לשישי
 </a>
   <script>
