@@ -434,9 +434,9 @@ renderShop();
   .whatsapp-button:hover {
     background-color: #128c7e;
   }
-    .order-form {
-    max-width: 400px;
-    margin: 40px auto;
+   .order-form {
+    max-width: 450px;
+    margin: 60px auto; /* נותן רווח גדול מלמעלה ומלמטה */
     padding: 25px;
     background: #ffffff;
     border: 2px solid #db7093;
@@ -444,6 +444,9 @@ renderShop();
     direction: rtl;
     font-family: sans-serif;
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    position: relative; /* מוודא שהוא זורם עם הדף ולא צף מעליו */
+    display: block; /* מבטיח שהוא תופס מקום משלו בשורה */
+    clear: both; /* מונע מאלמנטים אחרים להידחף לצדדים שלו */
   }
   .order-form h3 {
     color: #db7093;
