@@ -438,5 +438,10 @@ renderShop();
   <a href="https://wa.me/0512626522?text=היי,%20אני%20רוצה%20להזמין%20זר%20פרחים%20לשישי%20הקרוב!" class="whatsapp-button">
   💬 הזמנה בוואטסאפ לשישי
 </a>
+  <script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js');
+  }
+</script>
 </body>
 </html>
