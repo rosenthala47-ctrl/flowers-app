@@ -157,6 +157,55 @@
     #install-banner.show{display:flex;align-items:center;justify-content:space-between;gap:12px;}
     #install-btn{background:#fff;color:var(--ink);border:none;border-radius:10px;padding:10px 18px;font-size:13px;font-family:'Heebo',sans-serif;font-weight:500;cursor:pointer;white-space:nowrap;}
     #dismiss-btn{background:none;border:none;color:#aaa;font-size:20px;cursor:pointer;padding:4px;}
+
+    /* DELIVERY TRACKING */
+    #delivery-page{display:none;position:fixed;inset:0;background:#fafaf8;z-index:600;overflow-y:auto;}
+    #delivery-page.open{display:block;animation:fadeIn .3s ease;}
+    .delivery-header{background:linear-gradient(135deg,#1a1a1a,#2a2a2a);color:#fff;padding:calc(var(--safe-top)+20px) 20px 28px;text-align:right;}
+    .delivery-header .back{background:none;border:none;color:#fff;font-size:24px;cursor:pointer;padding:4px;margin-bottom:12px;display:block;}
+    .delivery-header h2{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:28px;margin-bottom:4px;}
+    .delivery-header p{font-size:13px;opacity:.7;}
+    .delivery-status-card{margin:16px;background:#fff;border-radius:16px;padding:24px;box-shadow:0 4px 20px rgba(0,0,0,.08);}
+    .status-emoji{font-size:52px;text-align:center;margin-bottom:12px;}
+    .status-title{font-size:20px;font-weight:500;text-align:center;margin-bottom:4px;}
+    .status-sub{font-size:13px;color:var(--muted);text-align:center;margin-bottom:20px;}
+    /* TIMER */
+    .timer-wrap{background:#f9f9f7;border-radius:12px;padding:16px;margin-bottom:16px;text-align:center;}
+    .timer-label{font-size:11px;color:var(--muted);letter-spacing:1px;margin-bottom:8px;}
+    .timer-display{font-family:'Cormorant Garamond',serif;font-size:48px;font-weight:300;color:var(--ink);line-height:1;}
+    .timer-progress{background:#e8e8e4;border-radius:20px;height:6px;margin-top:12px;overflow:hidden;}
+    .timer-fill{background:linear-gradient(90deg,#10b981,#34d399);height:100%;border-radius:20px;transition:width 1s linear;}
+    /* STEPS */
+    .delivery-steps{margin-bottom:16px;}
+    .step{display:flex;align-items:center;gap:12px;padding:10px 0;position:relative;}
+    .step:not(:last-child)::after{content:'';position:absolute;right:15px;top:36px;width:2px;height:calc(100% - 16px);background:var(--border);}
+    .step.done::after{background:#10b981;}
+    .step-dot{width:32px;height:32px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;background:#f0f0ec;color:var(--muted);border:2px solid var(--border);}
+    .step.done .step-dot{background:#10b981;color:#fff;border-color:#10b981;}
+    .step.active .step-dot{background:var(--ink);color:#fff;border-color:var(--ink);animation:pulse 1.5s infinite;}
+    .step-info{flex:1;text-align:right;}
+    .step-title{font-size:14px;font-weight:500;margin-bottom:2px;}
+    .step-time{font-size:11px;color:var(--muted);}
+    /* COURIER */
+    .courier-card{background:linear-gradient(135deg,#25D366,#20bd5a);color:#fff;border-radius:12px;padding:16px;display:flex;align-items:center;gap:14px;margin-bottom:16px;}
+    .courier-avatar{width:48px;height:48px;background:rgba(255,255,255,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;}
+    .courier-info{flex:1;text-align:right;}
+    .courier-name{font-size:16px;font-weight:500;margin-bottom:2px;}
+    .courier-role{font-size:12px;opacity:.85;}
+    .courier-call{background:rgba(255,255,255,.2);border:none;border-radius:8px;padding:8px 14px;color:#fff;font-family:'Heebo',sans-serif;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:6px;white-space:nowrap;}
+    /* ADMIN DELIVERY */
+    .admin-orders-list{padding:0 16px;}
+    .admin-order-card{background:#fff;border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.06);}
+    .admin-order-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+    .admin-order-name{font-size:15px;font-weight:500;}
+    .admin-order-meta{font-size:12px;color:var(--muted);margin-top:2px;}
+    .admin-order-status{font-size:11px;padding:4px 10px;border-radius:20px;font-weight:500;}
+    .status-pending{background:#fef3c7;color:#92400e;}
+    .status-delivering{background:#d1fae5;color:#065f46;}
+    .status-delivered{background:#e0e7ff;color:#3730a3;}
+    .dispatch-btn{width:100%;background:var(--wa);color:#fff;border:none;border-radius:10px;padding:12px;font-size:14px;font-family:'Heebo',sans-serif;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;}
+    .dispatch-btn:disabled{background:#ccc;cursor:not-allowed;}
+    @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(26,26,26,.3)}50%{box-shadow:0 0 0 6px rgba(26,26,26,0)}}
     @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
     @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
     @keyframes spin{to{transform:rotate(360deg)}}
@@ -246,6 +295,36 @@
   </div>
 </div>
 
+
+<!-- DELIVERY TRACKING PAGE -->
+<div id="delivery-page">
+  <div class="delivery-header">
+    <button class="back" onclick="closeDelivery()">←</button>
+    <h2>המשלוח בדרך! 🌸</h2>
+    <p>מעקב בזמן אמת</p>
+  </div>
+  <div style="padding:0 0 100px">
+    <div class="delivery-status-card">
+      <div class="status-emoji" id="d-emoji">🛵</div>
+      <div class="status-title" id="d-title">השליח בדרך אליך</div>
+      <div class="status-sub" id="d-sub">הפרחים שלך יגיעו בקרוב</div>
+      <div class="timer-wrap">
+        <div class="timer-label">זמן משוער להגעה</div>
+        <div class="timer-display" id="d-timer">18:00</div>
+        <div class="timer-progress"><div class="timer-fill" id="d-progress" style="width:0%"></div></div>
+      </div>
+      <div class="delivery-steps" id="d-steps"></div>
+      <div class="courier-card">
+        <div class="courier-avatar">🧑</div>
+        <div class="courier-info">
+          <div class="courier-name">השליח שלך</div>
+          <div class="courier-role">מספר טלפון: 0512626522</div>
+        </div>
+        <a href="tel:0512626522"><button class="courier-call">📞 התקשר</button></a>
+      </div>
+    </div>
+  </div>
+</div>
 <!-- INSTALL -->
 <div id="install-banner">
   <div><p>🌸 התקן את Flowers 4 Shabbat</p><span style="font-size:11px;color:#aaa;display:block;margin-top:2px">הוסף למסך הבית</span></div>
@@ -528,6 +607,8 @@ ${items}
 
 💰 *סה"כ: ₪${cartTotal()}*${disc?' (לאחר הנחה 50%)':''}`;
   window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`,'_blank');
+  // Save to admin orders
+  addAdminOrder(name, phone, cart.map(i=>i.name).join(', '), cartTotal(), time);
   // Update order count in Supabase
   if(currentUser) {
     const newOrders = [...(currentUser.orders||[]), {
@@ -655,12 +736,30 @@ function renderAccount() {
 function renderAdmin() {
   const el=document.getElementById('admin-content');
   const totalStock=products.reduce((s,p)=>s+p.stock,0);
+  const pending=adminOrders.filter(o=>o.status==='pending').length;
   el.innerHTML=`
     <div class="stats-grid">
       <div class="stat-card"><div class="stat-num">${products.length}</div><div class="stat-label">מוצרים</div></div>
       <div class="stat-card"><div class="stat-num">${totalStock}</div><div class="stat-label">במלאי</div></div>
-      <div class="stat-card"><div class="stat-num">—</div><div class="stat-label">הזמנות</div></div>
+      <div class="stat-card"><div class="stat-num">${pending}</div><div class="stat-label">ממתינים</div></div>
     </div>
+    ${adminOrders.length>0?`
+    <p class="admin-section-title">הזמנות לשליחה</p>
+    <div class="admin-orders-list">
+      ${adminOrders.map(o=>`<div class="admin-order-card">
+        <div class="admin-order-top">
+          <div>
+            <div class="admin-order-name">${o.name}</div>
+            <div class="admin-order-meta">📞 ${o.phone} · ⏰ ${o.time} · 💰 ₪${o.total}</div>
+            <div class="admin-order-meta">🛒 ${o.items}</div>
+          </div>
+          <span class="admin-order-status status-${o.status}">${o.status==='pending'?'ממתין':o.status==='delivering'?'בדרך':'נמסר'}</span>
+        </div>
+        ${o.status==='pending'?`<button class="dispatch-btn" onclick="dispatchOrder('${o.id}')">
+          🛵 שלח הודעה ללקוח — המשלוח יוצא לדרך!
+        </button>`:`<div style="text-align:center;color:#10b981;font-size:13px;padding:8px">✓ הודעה נשלחה ללקוח</div>`}
+      </div>`).join('')}
+    </div>`:''}
     <p class="admin-section-title">ניהול מלאי</p>
     ${products.map(p=>`<div class="inventory-item">
       <img class="inv-thumb" src="${p.img}" alt="${p.name}" onclick="openLightbox(${p.id})"/>
@@ -689,6 +788,120 @@ function addProduct() {
   if(!name||isNaN(price)||isNaN(stock)){showToast('יש למלא את כל השדות');return;}
   products.push({id:Date.now(),name,price,stock,img:'',desc:''});
   showToast(name+' נוסף! 🌺');renderAdmin();renderShop();
+}
+
+
+// ── DELIVERY TRACKING ─────────────────────────────────
+let deliveryTimer = null;
+let deliverySeconds = 0;
+let deliveryTotal = 0;
+
+const STEPS = [
+  {icon:'✅', title:'הזמנה התקבלה',    time:''},
+  {icon:'🌸', title:'הפרחים מוכנים',   time:''},
+  {icon:'🛵', title:'השליח בדרך',      time:''},
+  {icon:'🏠', title:'נמסר בהצלחה',     time:''},
+];
+
+function openDelivery(minutes) {
+  deliveryTotal = minutes * 60;
+  deliverySeconds = deliveryTotal;
+  document.getElementById('delivery-page').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  renderDeliverySteps(2); // step: courier on the way
+  startDeliveryTimer();
+}
+
+function closeDelivery() {
+  document.getElementById('delivery-page').classList.remove('open');
+  document.body.style.overflow = '';
+  if(deliveryTimer) clearInterval(deliveryTimer);
+}
+
+function startDeliveryTimer() {
+  if(deliveryTimer) clearInterval(deliveryTimer);
+  updateTimerDisplay();
+  deliveryTimer = setInterval(() => {
+    deliverySeconds--;
+    if(deliverySeconds <= 0) {
+      deliverySeconds = 0;
+      clearInterval(deliveryTimer);
+      // Delivered!
+      document.getElementById('d-emoji').textContent = '🌸';
+      document.getElementById('d-title').textContent = 'נמסר בהצלחה!';
+      document.getElementById('d-sub').textContent = 'תהנו מהפרחים היפים 💕';
+      renderDeliverySteps(3);
+    }
+    updateTimerDisplay();
+  }, 1000);
+}
+
+function updateTimerDisplay() {
+  const m = Math.floor(deliverySeconds / 60);
+  const s = deliverySeconds % 60;
+  document.getElementById('d-timer').textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  const pct = ((deliveryTotal - deliverySeconds) / deliveryTotal) * 100;
+  document.getElementById('d-progress').style.width = pct + '%';
+}
+
+function renderDeliverySteps(activeIdx) {
+  const now = new Date().toLocaleTimeString('he-IL', {hour:'2-digit', minute:'2-digit'});
+  document.getElementById('d-steps').innerHTML = STEPS.map((s,i) => {
+    const cls = i < activeIdx ? 'done' : i === activeIdx ? 'active' : '';
+    return `<div class="step ${cls}">
+      <div class="step-dot">${i < activeIdx ? '✓' : s.icon}</div>
+      <div class="step-info">
+        <div class="step-title">${s.title}</div>
+        <div class="step-time">${i <= activeIdx ? now : ''}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── ADMIN DISPATCH ────────────────────────────────────
+let adminOrders = JSON.parse(localStorage.getItem('f4s_admin_orders') || '[]');
+
+function saveAdminOrders() {
+  localStorage.setItem('f4s_admin_orders', JSON.stringify(adminOrders));
+}
+
+function addAdminOrder(name, phone, items, total, time) {
+  adminOrders.unshift({
+    id: 'ORD-' + Date.now(),
+    name, phone, items, total, time,
+    status: 'pending',
+    date: new Date().toLocaleDateString('he-IL')
+  });
+  saveAdminOrders();
+}
+
+function dispatchOrder(id) {
+  const order = adminOrders.find(o => o.id === id);
+  if(!order) return;
+  order.status = 'delivering';
+  saveAdminOrders();
+  // Send WhatsApp to customer
+  const msg = `🌸 *Flowers 4 Shabbat - המשלוח בדרך!*
+
+שלום ${order.name}! 👋
+
+🛵 *הפרחים שלך יצאו לדרך!*
+⏱️ זמן משוער להגעה: *15-20 דקות*
+📞 *מספר השליח:* ${COURIER_PHONE}
+
+לחץ על הקישור הזה למעקב חי:
+👉 ${window.location.href}?track=${id}
+
+תהנו מהפרחים! 🌸`;
+  window.open(`https://wa.me/972${order.phone.replace(/^0/,'')}?text=${encodeURIComponent(msg)}`, '_blank');
+  renderAdmin();
+  showToast('הודעה נשלחה ללקוח! 🛵');
+}
+
+// Check if opened with tracking link
+const urlParams = new URLSearchParams(window.location.search);
+if(urlParams.get('track')) {
+  setTimeout(() => openDelivery(18), 500);
 }
 
 // ── PWA ───────────────────────────────────────────────
