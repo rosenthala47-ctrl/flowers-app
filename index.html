@@ -21,19 +21,20 @@
     /* LIGHTBOX */
     #lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:500;align-items:center;justify-content:center;flex-direction:column;padding:20px;}
     #lightbox.open{display:flex;animation:fadeIn .2s ease;}
-    #lightbox img{max-width:100%;max-height:75vh;object-fit:contain;border-radius:4px;}
-    #lightbox-name{color:#fff;font-size:18px;margin-top:16px;}
+    #lightbox img{max-width:100%;max-height:68vh;object-fit:contain;border-radius:4px;}
+    #lightbox-name{color:#fff;font-size:18px;margin-top:14px;}
     #lightbox-price{color:#aaa;font-size:14px;margin-top:4px;}
-    #lightbox-close{position:absolute;top:calc(var(--safe-top) + 16px);left:20px;color:#fff;font-size:28px;background:none;border:none;cursor:pointer;width:44px;height:44px;display:flex;align-items:center;justify-content:center;}
-    #lightbox-add{margin-top:20px;background:#fff;color:var(--ink);border:none;border-radius:24px;padding:14px 36px;font-size:15px;font-family:'Heebo',sans-serif;font-weight:500;cursor:pointer;}
+    #lightbox-close{position:absolute;top:calc(var(--safe-top)+16px);left:20px;color:#fff;font-size:28px;background:none;border:none;cursor:pointer;width:44px;height:44px;display:flex;align-items:center;justify-content:center;}
+    #lightbox-add{margin-top:16px;background:#fff;color:var(--ink);border:none;border-radius:24px;padding:13px 32px;font-size:15px;font-family:'Heebo',sans-serif;font-weight:500;cursor:pointer;}
+    #lightbox-buynow{margin-top:10px;background:var(--wa);color:#fff;border:none;border-radius:24px;padding:13px 32px;font-size:15px;font-family:'Heebo',sans-serif;font-weight:500;cursor:pointer;}
 
     /* CHECKOUT MODAL */
     #checkout-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:400;align-items:flex-end;justify-content:center;}
     #checkout-modal.open{display:flex;}
-    .checkout-sheet{background:#fff;width:100%;max-width:520px;border-radius:20px 20px 0 0;padding:24px 20px calc(24px + var(--safe-bottom));max-height:90vh;overflow-y:auto;animation:slideUp .3s ease;}
+    .checkout-sheet{background:#fff;width:100%;max-width:520px;border-radius:20px 20px 0 0;padding:24px 20px calc(24px + var(--safe-bottom));max-height:92vh;overflow-y:auto;animation:slideUp .3s ease;}
     .checkout-sheet h2{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;font-size:24px;margin-bottom:6px;text-align:right;}
     .checkout-sheet .subtitle{font-size:13px;color:var(--muted);margin-bottom:20px;text-align:right;}
-    .order-summary{background:#f9f9f7;border-radius:8px;padding:14px;margin-bottom:20px;display:flex;align-items:center;gap:12px;}
+    .order-summary{background:#f9f9f7;border-radius:8px;padding:14px;margin-bottom:16px;display:flex;align-items:center;gap:12px;}
     .order-summary img{width:52px;height:68px;object-fit:cover;object-position:center top;border-radius:4px;}
     .order-summary-info{flex:1;text-align:right;}
     .order-summary-name{font-size:15px;font-weight:500;}
@@ -43,13 +44,14 @@
     .form-label{font-size:12px;color:var(--muted);margin-bottom:6px;display:block;text-align:right;letter-spacing:0.5px;}
     .form-input{width:100%;border:1px solid var(--border);border-radius:8px;padding:12px 14px;font-size:15px;font-family:'Heebo',sans-serif;text-align:right;outline:none;transition:border .2s;background:#fafaf8;}
     .form-input:focus{border-color:var(--ink);background:#fff;}
-    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+    .form-select{width:100%;border:1px solid var(--border);border-radius:8px;padding:12px 14px;font-size:15px;font-family:'Heebo',sans-serif;text-align:right;outline:none;background:#fafaf8;appearance:none;cursor:pointer;}
+    .form-select:focus{border-color:var(--ink);background:#fff;}
+    .friday-badge{background:#f0ede8;border-radius:8px;padding:10px 14px;font-size:13px;color:var(--ink);text-align:right;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
     .wa-btn{width:100%;background:var(--wa);color:#fff;border:none;border-radius:12px;padding:16px;font-size:16px;font-family:'Heebo',sans-serif;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;margin-top:8px;transition:background .2s;}
     .wa-btn:hover{background:#20bd5a;}
-    .wa-btn svg{width:22px;height:22px;flex-shrink:0;}
     .cancel-sheet{width:100%;background:none;border:1px solid var(--border);border-radius:12px;padding:14px;font-size:15px;font-family:'Heebo',sans-serif;cursor:pointer;margin-top:10px;color:var(--muted);}
 
-    /* SUCCESS MODAL */
+    /* SUCCESS */
     #success-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:600;align-items:center;justify-content:center;padding:20px;}
     #success-modal.open{display:flex;animation:fadeIn .3s ease;}
     .success-card{background:#fff;border-radius:20px;padding:32px 24px;text-align:center;max-width:340px;width:100%;}
@@ -71,10 +73,11 @@
     .page{display:none;padding-bottom:calc(80px + var(--safe-bottom));}
     .page.active{display:block;animation:fadeIn .25s ease;}
 
-    .hero{padding:40px 24px 32px;background:linear-gradient(180deg,#f0ede8 0%,var(--bg) 100%);text-align:right;}
+    /* HERO - no button */
+    .hero{padding:40px 24px 36px;background:linear-gradient(180deg,#f0ede8 0%,var(--bg) 100%);text-align:right;}
     .hero-sub{font-size:11px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:16px;}
-    .hero-title{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;font-size:42px;line-height:1.15;margin-bottom:24px;}
-    .hero-cta{display:inline-block;background:var(--ink);color:#fff;padding:14px 32px;border:none;border-radius:2px;font-size:14px;font-family:'Heebo',sans-serif;cursor:pointer;}
+    .hero-title{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;font-size:42px;line-height:1.15;}
+
     .section-label{font-size:11px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;padding:28px 20px 16px;text-align:right;}
     .products-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;padding:0 16px;}
     .product-card{background:#fff;border-radius:8px;overflow:hidden;transition:transform .15s;box-shadow:0 2px 8px rgba(0,0,0,.06);}
@@ -85,11 +88,13 @@
     .product-info{padding:12px;text-align:right;}
     .product-name{font-size:14px;font-weight:500;margin-bottom:4px;}
     .product-desc{font-size:11px;color:var(--muted);margin-bottom:10px;line-height:1.5;}
-    .product-footer{display:flex;justify-content:space-between;align-items:center;}
-    .product-price{font-size:16px;font-weight:500;}
-    .add-btn{background:var(--ink);color:#fff;border:none;border-radius:20px;padding:7px 14px;font-size:12px;font-family:'Heebo',sans-serif;cursor:pointer;transition:background .2s;}
+    .product-footer{display:flex;justify-content:space-between;align-items:center;gap:6px;}
+    .product-price{font-size:16px;font-weight:500;flex-shrink:0;}
+    .btns-wrap{display:flex;flex-direction:column;gap:5px;align-items:flex-start;}
+    .add-btn{background:var(--ink);color:#fff;border:none;border-radius:20px;padding:6px 12px;font-size:11px;font-family:'Heebo',sans-serif;cursor:pointer;transition:background .2s;white-space:nowrap;}
     .add-btn.added{background:var(--green);}
-    .stock-badge{font-size:10px;margin-top:6px;}
+    .buynow-btn{background:var(--wa);color:#fff;border:none;border-radius:20px;padding:6px 12px;font-size:11px;font-family:'Heebo',sans-serif;cursor:pointer;white-space:nowrap;}
+    .stock-note{font-size:9px;color:var(--muted);margin-top:8px;line-height:1.4;}
 
     /* CART */
     .page-title{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;font-size:28px;padding:24px 20px 20px;text-align:right;border-bottom:1px solid var(--border);}
@@ -120,7 +125,6 @@
     .order-meta{font-size:11px;color:var(--muted);}
     .order-left{text-align:left;}
     .order-total{font-size:15px;margin-bottom:4px;}
-    .order-status{font-size:11px;}
     .login-container{text-align:center;padding:60px 20px;}
     .login-icon{font-size:56px;margin-bottom:20px;}
     .login-text{font-size:15px;color:var(--muted);margin-bottom:28px;}
@@ -136,7 +140,6 @@
     .inventory-item{background:#fff;margin:0 16px 8px;border-radius:8px;padding:14px 16px;display:flex;align-items:center;gap:12px;}
     .inv-thumb{width:44px;height:56px;object-fit:cover;object-position:center top;border-radius:4px;flex-shrink:0;cursor:pointer;}
     .inv-name{flex:1;font-size:15px;text-align:right;}
-    .inv-details{display:flex;gap:12px;align-items:center;}
     .edit-btn{background:none;border:1px solid var(--border);padding:6px 14px;font-size:12px;font-family:'Heebo',sans-serif;cursor:pointer;border-radius:6px;}
     .edit-form{display:flex;gap:8px;align-items:center;}
     .edit-input{border:1px solid var(--ink);padding:6px 8px;font-size:13px;width:65px;font-family:'Heebo',sans-serif;border-radius:6px;text-align:center;}
@@ -151,7 +154,6 @@
 
     #toast{position:fixed;bottom:calc(85px + var(--safe-bottom));left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:10px 24px;border-radius:24px;font-size:13px;z-index:300;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap;}
     #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-
     #install-banner{display:none;position:fixed;bottom:calc(70px + var(--safe-bottom));left:16px;right:16px;background:var(--ink);color:#fff;border-radius:16px;padding:16px 20px;z-index:200;box-shadow:0 8px 32px rgba(0,0,0,.25);}
     #install-banner.show{display:flex;align-items:center;justify-content:space-between;gap:12px;}
     #install-btn{background:#fff;color:var(--ink);border:none;border-radius:10px;padding:10px 18px;font-size:13px;font-family:'Heebo',sans-serif;font-weight:500;cursor:pointer;white-space:nowrap;}
@@ -170,6 +172,7 @@
   <div id="lightbox-name"></div>
   <div id="lightbox-price"></div>
   <button id="lightbox-add" onclick="lightboxAdd()">+ הוסף לעגלה</button>
+  <button id="lightbox-buynow" onclick="lightboxBuyNow()">קנה עכשיו דרך וואטסאפ</button>
 </div>
 
 <!-- CHECKOUT MODAL -->
@@ -177,12 +180,26 @@
   <div class="checkout-sheet">
     <h2>פרטי המשלוח</h2>
     <p class="subtitle">מלא את הפרטים ונצור איתך קשר דרך וואטסאפ</p>
-
     <div id="order-summary-box"></div>
-
+    <div class="friday-badge">📅 המשלוח מתבצע בימי שישי בלבד</div>
+    <div class="form-group">
+      <label class="form-label">שעת משלוח</label>
+      <select class="form-select" id="f-time">
+        <option value="10:00">10:00</option>
+<option value="10:30">10:30</option>
+<option value="11:00">11:00</option>
+<option value="11:30">11:30</option>
+<option value="12:00">12:00</option>
+<option value="12:30">12:30</option>
+<option value="13:00">13:00</option>
+<option value="13:30">13:30</option>
+<option value="14:00">14:00</option>
+<option value="14:30">14:30</option>
+      </select>
+    </div>
     <div class="form-group">
       <label class="form-label">שם מלא</label>
-      <input class="form-input" id="f-name" placeholder="ישראל ישראלי" />
+      <input class="form-input" id="f-name" placeholder="ישראל ישראלי"/>
     </div>
     <div class="form-group">
       <label class="form-label">מספר טלפון</label>
@@ -192,35 +209,28 @@
       <label class="form-label">כתובת למשלוח</label>
       <input class="form-input" id="f-address" placeholder="רחוב, מספר בית, עיר"/>
     </div>
-    <div class="form-row">
-      <div class="form-group" style="margin-bottom:0">
-        <label class="form-label">קומה / דירה</label>
-        <input class="form-input" id="f-apt" placeholder="דירה 3"/>
-      </div>
-      <div class="form-group" style="margin-bottom:0">
-        <label class="form-label">תאריך משלוח</label>
-        <input class="form-input" id="f-date" type="date" dir="ltr"/>
-      </div>
+    <div class="form-group">
+      <label class="form-label">קומה / דירה (אופציונלי)</label>
+      <input class="form-input" id="f-apt" placeholder="דירה 3"/>
     </div>
-    <div class="form-group" style="margin-top:14px">
+    <div class="form-group">
       <label class="form-label">הערות (אופציונלי)</label>
       <input class="form-input" id="f-notes" placeholder="לדוגמה: להשאיר בכניסה"/>
     </div>
-
     <button class="wa-btn" onclick="sendWhatsApp()">
-      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.124.556 4.118 1.528 5.845L.057 23.571a.75.75 0 00.918.978l5.946-1.56A11.94 11.94 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75a9.713 9.713 0 01-4.953-1.356l-.355-.211-3.671.963.981-3.585-.232-.369A9.713 9.713 0 012.25 12C2.25 6.615 6.615 2.25 12 2.25S21.75 6.615 21.75 12 17.385 21.75 12 21.75z"/></svg>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.124.556 4.118 1.528 5.845L.057 23.571a.75.75 0 00.918.978l5.946-1.56A11.94 11.94 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75a9.713 9.713 0 01-4.953-1.356l-.355-.211-3.671.963.981-3.585-.232-.369A9.713 9.713 0 012.25 12C2.25 6.615 6.615 2.25 12 2.25S21.75 6.615 21.75 12 17.385 21.75 12 21.75z"/></svg>
       שלח הזמנה בוואטסאפ
     </button>
     <button class="cancel-sheet" onclick="closeCheckout()">ביטול</button>
   </div>
 </div>
 
-<!-- SUCCESS MODAL -->
+<!-- SUCCESS -->
 <div id="success-modal">
   <div class="success-card">
     <div class="success-icon">🌸</div>
     <div class="success-title">ההזמנה נשלחה!</div>
-    <div class="success-text">פתחנו עבורך וואטסאפ עם פרטי ההזמנה.<br/>לאחר אישור התשלום, ההזמנה תאושר ותישלח אליך.</div>
+    <div class="success-text">פתחנו עבורך וואטסאפ עם פרטי ההזמנה.<br/>לאחר אישור התשלום ההזמנה תאושר ותישלח אליך ביום שישי.</div>
     <button class="success-btn" onclick="closeSuccess()">חזור לחנות</button>
   </div>
 </div>
@@ -241,11 +251,11 @@
   <button class="logo" onclick="goTo('shop')">FLOWERS</button>
 </nav>
 
+<!-- SHOP -->
 <div class="page active" id="page-shop">
   <div class="hero">
     <p class="hero-sub">פרחים טריים, נשלחים באהבה</p>
-    <h1 class="hero-title">הטבע במיטבו,<br/>עד דלתך.</h1>
-    <button class="hero-cta" onclick="document.getElementById('products-grid').scrollIntoView({behavior:'smooth'})">לקנייה עכשיו ↓</button>
+    <h1 class="hero-title">דוכן הפרחים,<br/>עד פתח הבית.</h1>
   </div>
   <p class="section-label">הפרחים שלנו</p>
   <div class="products-grid" id="products-grid"></div>
@@ -290,9 +300,9 @@ let products = [
 ];
 let cart=[],loggedIn=false,editingId=null,lightboxId=null;
 const orders=[
-  {id:"ORD-001",product:"ורדים ורודים",qty:2,total:90, status:"delivered",date:"15.03.2024"},
-  {id:"ORD-002",product:"זר פרימיום",  qty:1,total:60, status:"shipped",  date:"28.03.2024"},
-  {id:"ORD-003",product:"ורדים צהובים",qty:3,total:135,status:"pending",  date:"01.04.2024"},
+  {id:"ORD-001",product:"ורדים ורודים",qty:2,total:90, status:"delivered",date:"14.03.2025"},
+  {id:"ORD-002",product:"זר פרימיום",  qty:1,total:60, status:"shipped",  date:"21.03.2025"},
+  {id:"ORD-003",product:"ורדים צהובים",qty:3,total:135,status:"pending",  date:"28.03.2025"},
 ];
 const statusLabel={pending:"ממתין",shipped:"נשלח",delivered:"נמסר"};
 const statusColor={pending:"#f59e0b",shipped:"#3b82f6",delivered:"#10b981"};
@@ -316,7 +326,7 @@ function showToast(msg){
 
 // LIGHTBOX
 function openLightbox(id){
-  const p=products.find(x=>x.id===id); if(!p)return;
+  const p=products.find(x=>x.id===id);if(!p)return;
   lightboxId=id;
   document.getElementById('lightbox-img').src=p.img;
   document.getElementById('lightbox-name').textContent=p.name;
@@ -328,19 +338,22 @@ function openLightbox(id){
   document.getElementById('lightbox').classList.add('open');
   document.body.style.overflow='hidden';
 }
-function closeLightbox(){
-  document.getElementById('lightbox').classList.remove('open');
-  document.body.style.overflow='';lightboxId=null;
-}
+function closeLightbox(){document.getElementById('lightbox').classList.remove('open');document.body.style.overflow='';lightboxId=null;}
 function lightboxAdd(){
   if(!lightboxId)return;
   addToCart(lightboxId);
-  const btn=document.getElementById('lightbox-add');
-  btn.textContent='✓ נוסף לעגלה';btn.style.background='#10b981';
+  document.getElementById('lightbox-add').textContent='✓ נוסף לעגלה';
+  document.getElementById('lightbox-add').style.background='#10b981';
+}
+function lightboxBuyNow(){
+  if(!lightboxId)return;
+  const p=products.find(x=>x.id===lightboxId);
+  if(!p)return;
+  cart=[{...p,qty:1}];
+  updateBadge();closeLightbox();openCheckout();
 }
 document.getElementById('lightbox').addEventListener('click',function(e){if(e.target===this)closeLightbox();});
 
-// CART
 function cartCount(){return cart.reduce((s,i)=>s+i.qty,0);}
 function cartTotal(){return cart.reduce((s,i)=>s+i.price*i.qty,0);}
 function updateBadge(){
@@ -353,6 +366,11 @@ function addToCart(id){
   if(ex)ex.qty++;else cart.push({...p,qty:1});
   updateBadge();showToast(p.name+' נוסף לעגלה 🌸');renderShop();
 }
+function buyNowDirect(id){
+  const p=products.find(x=>x.id===id);if(!p)return;
+  if(!cart.find(x=>x.id===id))cart.push({...p,qty:1});
+  updateBadge();openCheckout();
+}
 function changeQty(id,delta){
   const item=cart.find(x=>x.id===id);if(!item)return;
   item.qty+=delta;
@@ -360,7 +378,6 @@ function changeQty(id,delta){
   updateBadge();renderCart();
 }
 
-// CHECKOUT
 function openCheckout(){
   if(cart.length===0)return;
   const summary=document.getElementById('order-summary-box');
@@ -376,15 +393,8 @@ function openCheckout(){
     <div style="text-align:left;font-size:16px;font-weight:500;margin-bottom:16px;padding:0 4px">סה"כ: ₪${cartTotal()}</div>`;
   document.getElementById('checkout-modal').classList.add('open');
   document.body.style.overflow='hidden';
-  // set min date to today
-  const today=new Date().toISOString().split('T')[0];
-  document.getElementById('f-date').min=today;
-  document.getElementById('f-date').value=today;
 }
-function closeCheckout(){
-  document.getElementById('checkout-modal').classList.remove('open');
-  document.body.style.overflow='';
-}
+function closeCheckout(){document.getElementById('checkout-modal').classList.remove('open');document.body.style.overflow='';}
 document.getElementById('checkout-modal').addEventListener('click',function(e){if(e.target===this)closeCheckout();});
 
 function sendWhatsApp(){
@@ -392,32 +402,22 @@ function sendWhatsApp(){
   const phone   = document.getElementById('f-phone').value.trim();
   const address = document.getElementById('f-address').value.trim();
   const apt     = document.getElementById('f-apt').value.trim();
-  const date    = document.getElementById('f-date').value;
+  const time    = document.getElementById('f-time').value;
   const notes   = document.getElementById('f-notes').value.trim();
-
-  if(!name||!phone||!address){
-    showToast('נא למלא שם, טלפון וכתובת');return;
-  }
-
-  const items = cart.map(i=>`  • ${i.name} × ${i.qty} = ₪${i.price*i.qty}`).join('\n');
-  const dateStr = date ? new Date(date).toLocaleDateString('he-IL') : 'לא צוין';
-
-  const msg = `🌸 *הזמנה חדשה מפלאוורס!*
+  if(!name||!phone||!address){showToast('נא למלא שם, טלפון וכתובת');return;}
+  const items=cart.map(i=>`  • ${i.name} × ${i.qty} = ₪${i.price*i.qty}`).join('\n');
+  const msg=`🌸 *הזמנה חדשה מפלאוורס!*
 
 👤 *שם:* ${name}
 📞 *טלפון:* ${phone}
 📍 *כתובת:* ${address}${apt?' דירה '+apt:''}
-📅 *תאריך משלוח:* ${dateStr}
+📅 *משלוח:* יום שישי בשעה ${time}
 ${notes?'📝 *הערות:* '+notes+'\n':''}
 🛒 *פרטי ההזמנה:*
 ${items}
 
-💰 *סה"כ לתשלום: ₪${cartTotal()}*
-
-לאישור ההזמנה, שלח ללקוח את קישור הביט לתשלום.`;
-
-  const url = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`;
-  window.open(url,'_blank');
+💰 *סה"כ לתשלום: ₪${cartTotal()}*`;
+  window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`,'_blank');
   closeCheckout();
   document.getElementById('success-modal').classList.add('open');
 }
@@ -440,11 +440,12 @@ function renderShop(){
         <div class="product-desc">${p.desc}</div>
         <div class="product-footer">
           <span class="product-price">₪${p.price}</span>
-          <button class="add-btn${inCart?' added':''}" onclick="addToCart(${p.id})">
-            ${inCart?'✓ בעגלה':'+ הוסף'}
-          </button>
+          <div class="btns-wrap">
+            <button class="add-btn${inCart?' added':''}" onclick="addToCart(${p.id})">${inCart?'✓ בעגלה':'+ הוסף לעגלה'}</button>
+            <button class="buynow-btn" onclick="buyNowDirect(${p.id})">קנה עכשיו</button>
+          </div>
         </div>
-        <div class="stock-badge" style="color:${p.stock>5?'#10b981':'#f59e0b'}">${p.stock>0?p.stock+' במלאי':'אזל המלאי'}</div>
+        <div class="stock-note">* בכפוף למלאי. במידה וזר זה אינו קיים במלאי, הזמנתכם תבוטל.</div>
       </div>
     </div>`;
   }).join('');
@@ -480,21 +481,11 @@ function renderCart(){
 
 function renderAccount(){
   const el=document.getElementById('account-content');
-  if(!loggedIn){
-    el.innerHTML=`<div class="login-container"><div class="login-icon">👤</div><div class="login-text">יש להתחבר כדי לצפות בחשבון</div><button class="login-btn" onclick="loggedIn=true;renderAccount()">התחברות</button></div>`;
-    return;
-  }
+  if(!loggedIn){el.innerHTML=`<div class="login-container"><div class="login-icon">👤</div><div class="login-text">יש להתחבר כדי לצפות בחשבון</div><button class="login-btn" onclick="loggedIn=true;renderAccount()">התחברות</button></div>`;return;}
   el.innerHTML=`
-    <div class="account-card">
-      <div class="account-label">פרטי חשבון</div>
-      <div class="account-name">שרה כהן</div>
-      <div class="account-email">sarah@email.com</div>
-    </div>
+    <div class="account-card"><div class="account-label">פרטי חשבון</div><div class="account-name">שרה כהן</div><div class="account-email">sarah@email.com</div></div>
     <p class="admin-section-title">היסטוריית הזמנות</p>
-    ${orders.map(o=>`<div class="order-item">
-      <div class="order-left"><div class="order-total">₪${o.total}</div><div class="order-status" style="color:${statusColor[o.status]}">${statusLabel[o.status]}</div></div>
-      <div class="order-right"><div class="order-name">${o.product} ×${o.qty}</div><div class="order-meta">${o.id} · ${o.date}</div></div>
-    </div>`).join('')}
+    ${orders.map(o=>`<div class="order-item"><div class="order-left"><div class="order-total">₪${o.total}</div><div class="order-status" style="color:${statusColor[o.status]}">${statusLabel[o.status]}</div></div><div class="order-right"><div class="order-name">${o.product} ×${o.qty}</div><div class="order-meta">${o.id} · ${o.date}</div></div></div>`).join('')}
     <button class="logout-btn" onclick="loggedIn=false;renderAccount()">התנתקות</button>`;
 }
 
@@ -512,33 +503,15 @@ function renderAdmin(){
     ${products.map(p=>`<div class="inventory-item">
       <img class="inv-thumb" src="${p.img}" alt="${p.name}" onclick="openLightbox(${p.id})"/>
       <div class="inv-name">${p.name}</div>
-      ${editingId===p.id?`
-        <div class="edit-form">
-          <button class="cancel-btn" onclick="editingId=null;renderAdmin()">✕</button>
-          <button class="save-btn" onclick="saveEdit(${p.id})">שמור</button>
-          <input class="edit-input" id="edit-stock-${p.id}" value="${p.stock}" placeholder="כמות"/>
-          <input class="edit-input" id="edit-price-${p.id}" value="${p.price}" placeholder="מחיר"/>
-        </div>`:`
-        <div class="inv-details">
-          <span style="font-size:13px;color:${p.stock<5?'#f59e0b':'#555'}">${p.stock} יח׳</span>
-          <span style="font-size:13px;color:var(--muted)">₪${p.price}</span>
-          <button class="edit-btn" onclick="editingId=${p.id};renderAdmin()">עריכה</button>
-        </div>`}
+      ${editingId===p.id?`<div class="edit-form"><button class="cancel-btn" onclick="editingId=null;renderAdmin()">✕</button><button class="save-btn" onclick="saveEdit(${p.id})">שמור</button><input class="edit-input" id="edit-stock-${p.id}" value="${p.stock}" placeholder="כמות"/><input class="edit-input" id="edit-price-${p.id}" value="${p.price}" placeholder="מחיר"/></div>`:`<div style="display:flex;gap:12px;align-items:center"><span style="font-size:13px;color:${p.stock<5?'#f59e0b':'#555'}">${p.stock} יח׳</span><span style="font-size:13px;color:var(--muted)">₪${p.price}</span><button class="edit-btn" onclick="editingId=${p.id};renderAdmin()">עריכה</button></div>`}
     </div>`).join('')}
     <p class="admin-section-title">הוספת מוצר</p>
     <div class="add-product-form">
       <input id="new-name" placeholder="שם המוצר"/>
-      <div class="add-row">
-        <input id="new-price" placeholder="מחיר ₪" type="number"/>
-        <input id="new-stock" placeholder="כמות" type="number"/>
-        <button class="add-submit" onclick="addProduct()">+ הוסף</button>
-      </div>
+      <div class="add-row"><input id="new-price" placeholder="מחיר ₪" type="number"/><input id="new-stock" placeholder="כמות" type="number"/><button class="add-submit" onclick="addProduct()">+ הוסף</button></div>
     </div>
     <p class="admin-section-title">הזמנות אחרונות</p>
-    ${orders.map(o=>`<div class="order-item">
-      <div class="order-left"><div class="order-total">₪${o.total}</div><div class="order-status" style="color:${statusColor[o.status]}">${statusLabel[o.status]}</div></div>
-      <div class="order-right"><div class="order-name">${o.product} ×${o.qty}</div><div class="order-meta">${o.id} · ${o.date}</div></div>
-    </div>`).join('')}`;
+    ${orders.map(o=>`<div class="order-item"><div class="order-left"><div class="order-total">₪${o.total}</div><div class="order-status" style="color:${statusColor[o.status]}">${statusLabel[o.status]}</div></div><div class="order-right"><div class="order-name">${o.product} ×${o.qty}</div><div class="order-meta">${o.id} · ${o.date}</div></div></div>`).join('')}`;
 }
 
 function saveEdit(id){
