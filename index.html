@@ -619,6 +619,7 @@ ${items}
     currentUser.order_count++;
     currentUser.orders = newOrders;
     saveSession();
+    renderShop(); // refresh prices after first order
   }
   closeCheckout();
   const remaining = currentUser ? 10-(currentUser.order_count%10) : null;
@@ -880,20 +881,18 @@ function dispatchOrder(id) {
   if(!order) return;
   order.status = 'delivering';
   saveAdminOrders();
-  // Send WhatsApp to customer
-  const msg = `🌸 *Flowers 4 Shabbat - המשלוח בדרך!*
-
-שלום ${order.name}! 👋
-
-🛵 *הפרחים שלך יצאו לדרך!*
-⏱️ זמן משוער להגעה: *15-20 דקות*
-📞 *מספר השליח:* ${COURIER_PHONE}
-
-לחץ על הקישור הזה למעקב חי:
-👉 ${window.location.href}?track=${id}
-
-תהנו מהפרחים! 🌸`;
-  window.open(`https://wa.me/972${order.phone.replace(/^0/,'')}?text=${encodeURIComponent(msg)}`, '_blank');
+  const phone = '972' + order.phone.replace(/^0/,'').replace(/[-\s]/g,'');
+  const trackUrl = window.location.origin + window.location.pathname + '?track=' + id;
+  const msg = '🌸 *Flowers 4 Shabbat - המשלוח בדרך!*\n\n'
+    + 'שלום ' + order.name + '! 👋\n\n'
+    + '🛵 *הפרחים שלך יצאו לדרך!*\n'
+    + '⏱️ זמן משוער להגעה: *15-20 דקות*\n'
+    + '📞 *מספר השליח:* 0512626522\n\n'
+    + 'למעקב חי לחץ כאן:\n'
+    + '👉 ' + trackUrl + '\n\n'
+    + 'תהנו מהפרחים! 🌸';
+  const waUrl = 'https://wa.me/' + phone + '?text=' + encodeURIComponent(msg);
+  window.open(waUrl, '_blank');
   renderAdmin();
   showToast('הודעה נשלחה ללקוח! 🛵');
 }
