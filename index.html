@@ -7,10 +7,9 @@
   <meta name="apple-mobile-web-app-capable" content="yes"/>
   <meta name="apple-mobile-web-app-title" content="Flowers 4 Shabbat"/>
   <title>Flowers 4 Shabbat</title>
-  <script>
-    const m={name:"Flowers 4 Shabbat",short_name:"F4S",start_url:"/",display:"standalone",background_color:"#fafaf8",theme_color:"#1a1a1a"};
-    document.write('<link rel="manifest" href="'+URL.createObjectURL(new Blob([JSON.stringify(m)],{type:'application/json'}))+'">');
-  </script>
+  <link rel="manifest" href="manifest.json"/>
+  <link rel="icon" href="icon.svg" type="image/svg+xml"/>
+  <link rel="apple-touch-icon" href="icon.svg"/>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Heebo:wght@300;400;500&display=swap" rel="stylesheet"/>
   <style>
     :root{--bg:#fafaf8;--ink:#1a1a1a;--muted:#888;--border:#e8e8e4;--green:#10b981;--gold:#c9a84c;--wa:#25D366;--safe-top:env(safe-area-inset-top,0px);--safe-bottom:env(safe-area-inset-bottom,0px);}
@@ -153,9 +152,10 @@
     .spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--ink);border-radius:50%;animation:spin 0.8s linear infinite;}
     #toast{position:fixed;bottom:calc(85px + var(--safe-bottom));left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:10px 24px;border-radius:24px;font-size:13px;z-index:700;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap;}
     #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-    #install-banner{display:none;position:fixed;bottom:calc(70px + var(--safe-bottom));left:16px;right:16px;background:var(--ink);color:#fff;border-radius:16px;padding:16px 20px;z-index:200;box-shadow:0 8px 32px rgba(0,0,0,.25);}
+    #install-banner{display:none;position:fixed;top:0;left:0;right:0;background:linear-gradient(135deg,#1a1a1a,#2a2a2a);color:#fff;padding:calc(var(--safe-top) + 14px) 20px 14px;z-index:300;box-shadow:0 4px 20px rgba(0,0,0,.3);animation:slideDown .4s ease;}
     #install-banner.show{display:flex;align-items:center;justify-content:space-between;gap:12px;}
-    #install-btn{background:#fff;color:var(--ink);border:none;border-radius:10px;padding:10px 18px;font-size:13px;font-family:'Heebo',sans-serif;font-weight:500;cursor:pointer;white-space:nowrap;}
+    @keyframes slideDown{from{transform:translateY(-100%)}to{transform:translateY(0)}}
+    #install-btn{background:linear-gradient(135deg,#c9a84c,#e8c96a);color:#1a1a1a;border:none;border-radius:10px;padding:10px 18px;font-size:13px;font-family:'Heebo',sans-serif;font-weight:500;cursor:pointer;white-space:nowrap;}
     #dismiss-btn{background:none;border:none;color:#aaa;font-size:20px;cursor:pointer;padding:4px;}
 
     /* DELIVERY TRACKING */
@@ -329,8 +329,11 @@
 </div>
 <!-- INSTALL -->
 <div id="install-banner">
-  <div><p>🌸 התקן את Flowers 4 Shabbat</p><span style="font-size:11px;color:#aaa;display:block;margin-top:2px">הוסף למסך הבית</span></div>
-  <div style="display:flex;gap:8px;align-items:center"><button id="install-btn">התקן</button><button id="dismiss-btn">✕</button></div>
+  <div style="display:flex;align-items:center;gap:12px">
+    <img src="icon.svg" alt="F4S" style="width:40px;height:40px;border-radius:10px;flex-shrink:0"/>
+    <div><p style="font-size:14px;font-weight:500;margin:0">🌸 התקן את Flowers 4 Shabbat</p><span style="font-size:11px;color:#aaa;display:block;margin-top:2px">גישה מהירה מהמסך הראשי — בלי לחפש</span></div>
+  </div>
+  <div style="display:flex;gap:8px;align-items:center;flex-shrink:0"><button id="install-btn">התקן עכשיו</button><button id="dismiss-btn">✕</button></div>
 </div>
 
 <div id="toast"></div>
@@ -988,7 +991,7 @@ let deferredPrompt;
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;document.getElementById('install-banner').classList.add('show');});
 document.getElementById('install-btn').addEventListener('click',async()=>{if(!deferredPrompt)return;deferredPrompt.prompt();const{outcome}=await deferredPrompt.userChoice;if(outcome==='accepted')showToast('הותקן! 🌸');deferredPrompt=null;document.getElementById('install-banner').classList.remove('show');});
 document.getElementById('dismiss-btn').addEventListener('click',()=>{document.getElementById('install-banner').classList.remove('show');});
-if('serviceWorker' in navigator){const sw=`self.addEventListener('install',e=>self.skipWaiting());self.addEventListener('fetch',e=>{e.respondWith(caches.open('f4s-v2').then(c=>fetch(e.request).then(r=>{c.put(e.request,r.clone());return r;}).catch(()=>c.match(e.request))));});`;navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw],{type:'application/javascript'})));}
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js');}
 
 // ── INIT ──────────────────────────────────────────────
 renderShop();
