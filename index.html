@@ -249,6 +249,17 @@
   </div>
 </div>
 
+<!-- ADMIN LOGIN -->
+<div class="modal-overlay" id="admin-login-modal">
+  <div class="modal-sheet">
+    <h2>🔒 גישת ניהול</h2>
+    <p class="subtitle">הזן סיסמה כדי להיכנס ללוח הניהול</p>
+    <div class="form-group"><label class="form-label">סיסמה</label><input class="form-input" id="admin-pass" type="password" placeholder="הזן סיסמה" dir="ltr"/></div>
+    <button class="btn-primary" onclick="checkAdminPass()">כניסה</button>
+    <button class="btn-secondary" onclick="closeAdminLogin()">ביטול</button>
+  </div>
+</div>
+
 <!-- CHECKOUT -->
 <div class="modal-overlay" id="checkout-modal">
   <div class="modal-sheet">
@@ -374,7 +385,7 @@
   <button class="nav-tab active" id="tab-shop" onclick="goTo('shop')"><span class="icon">🌸</span>חנות</button>
   <button class="nav-tab" id="tab-cart" onclick="goTo('cart')"><span class="icon">🛒</span>עגלה</button>
   <button class="nav-tab" id="tab-account" onclick="goTo('account')"><span class="icon">👤</span>חשבון</button>
-  <button class="nav-tab" id="tab-admin" onclick="goTo('admin')"><span class="icon">⚙️</span>ניהול</button>
+  <button class="nav-tab" id="tab-admin" onclick="goTo('admin')" style="display:none"><span class="icon">⚙️</span>ניהול</button>
 </nav>
 
 <script>
@@ -482,6 +493,7 @@ function discountedPrice(p) { return hasDiscount() ? Math.round(p*0.5) : p; }
 
 // ── NAV ───────────────────────────────────────────────
 function goTo(page) {
+  if(page==='admin' && !adminUnlocked) return;
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
   document.getElementById('page-'+page).classList.add('active');
@@ -1027,6 +1039,56 @@ window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPro
 document.getElementById('install-btn').addEventListener('click',async()=>{if(!deferredPrompt)return;deferredPrompt.prompt();const{outcome}=await deferredPrompt.userChoice;if(outcome==='accepted')showToast('הותקן! 🌸');deferredPrompt=null;document.getElementById('install-banner').classList.remove('show');});
 document.getElementById('dismiss-btn').addEventListener('click',()=>{document.getElementById('install-banner').classList.remove('show');});
 if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js');}
+
+// ── ADMIN AUTH ────────────────────────────────────────
+const ADMIN_PASS = 'Aa334292232';
+let adminUnlocked = sessionStorage.getItem('f4s_admin') === 'true';
+let logoTaps = 0;
+let logoTapTimer = null;
+
+document.querySelector('.logo').addEventListener('click', function(e) {
+  logoTaps++;
+  if(logoTapTimer) clearTimeout(logoTapTimer);
+  logoTapTimer = setTimeout(() => { logoTaps = 0; }, 2000);
+  if(logoTaps >= 5) {
+    logoTaps = 0;
+    if(adminUnlocked) {
+      document.getElementById('tab-admin').style.display = '';
+      goTo('admin');
+    } else {
+      openAdminLogin();
+    }
+  }
+});
+
+function openAdminLogin() {
+  document.getElementById('admin-pass').value = '';
+  document.getElementById('admin-login-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeAdminLogin() {
+  document.getElementById('admin-login-modal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function checkAdminPass() {
+  const pass = document.getElementById('admin-pass').value;
+  if(pass === ADMIN_PASS) {
+    adminUnlocked = true;
+    sessionStorage.setItem('f4s_admin', 'true');
+    closeAdminLogin();
+    document.getElementById('tab-admin').style.display = '';
+    goTo('admin');
+    showToast('ברוך הבא למצב ניהול 🔓');
+  } else {
+    showFieldError(document.getElementById('admin-pass'), 'סיסמה שגויה');
+  }
+}
+document.getElementById('admin-pass').addEventListener('keydown', function(e) {
+  if(e.key === 'Enter') checkAdminPass();
+});
+
+// Restore admin if already unlocked this session
+if(adminUnlocked) document.getElementById('tab-admin').style.display = '';
 
 // ── INIT ──────────────────────────────────────────────
 renderShop();
