@@ -205,6 +205,8 @@
     .status-delivered{background:#e0e7ff;color:#3730a3;}
     .dispatch-btn{width:100%;background:var(--wa);color:#fff;border:none;border-radius:10px;padding:12px;font-size:14px;font-family:'Heebo',sans-serif;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;}
     .dispatch-btn:disabled{background:#ccc;cursor:not-allowed;}
+    .housing-btn{flex:1;padding:12px;border-radius:10px;border:1px solid var(--border);background:#fff;font-family:'Heebo',sans-serif;font-size:14px;cursor:pointer;transition:all .2s;}
+    .housing-btn.active{border-color:var(--ink);background:var(--ink);color:#fff;}
     .field-error{color:#e53e3e;font-size:11px;margin-top:4px;text-align:right;}
     @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(26,26,26,.3)}50%{box-shadow:0 0 0 6px rgba(26,26,26,0)}}
     @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
@@ -266,8 +268,21 @@
 <option value="14:30">14:30</option></select></div>
     <div class="form-group"><label class="form-label">שם מלא</label><input class="form-input" id="f-name" placeholder="ישראל ישראלי"/></div>
     <div class="form-group"><label class="form-label">מספר טלפון</label><input class="form-input" id="f-phone" placeholder="0501234567" type="tel" dir="ltr"/></div>
-    <div class="form-group"><label class="form-label">כתובת למשלוח</label><input class="form-input" id="f-address" placeholder="רחוב, מספר בית, עיר"/></div>
-    <div class="form-group"><label class="form-label">קומה / דירה (אופציונלי)</label><input class="form-input" id="f-apt" placeholder="דירה 3"/></div>
+    <div class="form-group"><label class="form-label">עיר</label><input class="form-input" id="f-city" placeholder="תל אביב"/></div>
+    <div style="display:flex;gap:10px">
+      <div class="form-group" style="flex:2"><label class="form-label">שם רחוב</label><input class="form-input" id="f-street" placeholder="הרצל"/></div>
+      <div class="form-group" style="flex:1"><label class="form-label">מספר</label><input class="form-input" id="f-streetnum" placeholder="12" type="number" dir="ltr"/></div>
+    </div>
+    <div class="form-group"><label class="form-label">סוג מגורים</label>
+      <div style="display:flex;gap:10px;margin-top:6px">
+        <button type="button" class="housing-btn active" id="btn-building" onclick="setHousing('building')">🏢 בניין</button>
+        <button type="button" class="housing-btn" id="btn-private" onclick="setHousing('private')">🏠 דירה פרטית</button>
+      </div>
+    </div>
+    <div id="building-fields" style="display:flex;gap:10px">
+      <div class="form-group" style="flex:1"><label class="form-label">קומה</label><input class="form-input" id="f-floor" placeholder="3" type="number" dir="ltr"/></div>
+      <div class="form-group" style="flex:1"><label class="form-label">מספר דירה</label><input class="form-input" id="f-apt" placeholder="8" type="number" dir="ltr"/></div>
+    </div>
     <div class="form-group"><label class="form-label">הערות (אופציונלי)</label><input class="form-input" id="f-notes" placeholder="לדוגמה: להשאיר בכניסה"/></div>
     <button class="btn-wa" onclick="sendWhatsApp()">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.124.556 4.118 1.528 5.845L.057 23.571a.75.75 0 00.918.978l5.946-1.56A11.94 11.94 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75a9.713 9.713 0 01-4.953-1.356l-.355-.211-3.671.963.981-3.585-.232-.369A9.713 9.713 0 012.25 12C2.25 6.615 6.615 2.25 12 2.25S21.75 6.615 21.75 12 17.385 21.75 12 21.75z"/></svg>
@@ -612,6 +627,14 @@ function lightboxBuyNow() {
 document.getElementById('lightbox').addEventListener('click',function(e){if(e.target===this)closeLightbox();});
 
 // ── CHECKOUT ──────────────────────────────────────────
+let housingType = 'building';
+function setHousing(type) {
+  housingType = type;
+  document.getElementById('btn-building').classList.toggle('active', type==='building');
+  document.getElementById('btn-private').classList.toggle('active', type==='private');
+  document.getElementById('building-fields').style.display = type==='building' ? 'flex' : 'none';
+}
+
 function openCheckout() {
   if(cart.length===0) return;
   if(currentUser) {
@@ -642,25 +665,38 @@ async function sendWhatsApp() {
   clearAllErrors(modal);
   const nameEl    = document.getElementById('f-name');
   const phoneEl   = document.getElementById('f-phone');
-  const addressEl = document.getElementById('f-address');
+  const cityEl    = document.getElementById('f-city');
+  const streetEl  = document.getElementById('f-street');
+  const streetnumEl = document.getElementById('f-streetnum');
   const name    = nameEl.value.trim();
   const phone   = phoneEl.value.trim();
-  const address = addressEl.value.trim();
+  const city    = cityEl.value.trim();
+  const street  = streetEl.value.trim();
+  const streetnum = streetnumEl.value.trim();
+  const floor   = document.getElementById('f-floor').value.trim();
   const apt     = document.getElementById('f-apt').value.trim();
   const time    = document.getElementById('f-time').value;
   const notes   = document.getElementById('f-notes').value.trim();
   let valid = true;
   if(!validateName(name))     { showFieldError(nameEl, 'שם מלא חייב להכיל לפחות 2 תווים'); valid = false; }
   if(!validatePhone(phone))   { showFieldError(phoneEl, 'מספר טלפון לא תקין (לדוגמה: 0501234567)'); valid = false; }
-  if(!validateAddress(address)) { showFieldError(addressEl, 'כתובת חייבת להכיל לפחות 5 תווים (רחוב, מספר, עיר)'); valid = false; }
+  if(!city)                   { showFieldError(cityEl, 'נא להזין עיר'); valid = false; }
+  if(!street)                 { showFieldError(streetEl, 'נא להזין שם רחוב'); valid = false; }
+  if(!streetnum)              { showFieldError(streetnumEl, 'נא להזין מספר'); valid = false; }
+  if(housingType==='building') {
+    if(!floor) { showFieldError(document.getElementById('f-floor'), 'נא להזין קומה'); valid = false; }
+    if(!apt)   { showFieldError(document.getElementById('f-apt'), 'נא להזין מספר דירה'); valid = false; }
+  }
   if(!valid) return;
+  const address = `${street} ${streetnum}, ${city}`;
+  const aptInfo = housingType==='building' ? ` קומה ${floor} דירה ${apt}` : ' (דירה פרטית)';
   const disc=hasDiscount();
   const items=cart.map(i=>`  • ${i.name} × ${i.qty} = ₪${discountedPrice(i.price)*i.qty}${disc?' (מחיר רגיל ₪'+i.price*i.qty+')':''}`).join('\n');
   const msg=`🌸 *הזמנה חדשה - Flowers 4 Shabbat*
 
 👤 *שם:* ${name}
 📞 *טלפון:* ${phone}
-📍 *כתובת:* ${address}${apt?' דירה '+apt:''}
+📍 *כתובת:* ${address}${aptInfo}
 📅 *משלוח:* יום שישי בשעה ${time}
 ${disc?'🎉 *הנחה ראשונה 50%*\n':''}${notes?'📝 *הערות:* '+notes+'\n':''}
 🛒 *פרטי ההזמנה:*
@@ -668,8 +704,7 @@ ${items}
 
 💰 *סה"כ: ₪${cartTotal()}*${disc?' (לאחר הנחה 50%)':''}`;
   window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`,'_blank');
-  // Save to admin orders
-  const address_val = document.getElementById('f-address').value.trim();
+  const address_val = address + aptInfo;
   await addAdminOrder(name, phone, cart.map(i=>i.name).join(', '), cartTotal(), time, address_val);
   // Update order count in Supabase
   if(currentUser) {
