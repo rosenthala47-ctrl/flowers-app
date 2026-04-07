@@ -205,6 +205,7 @@
     .status-delivered{background:#e0e7ff;color:#3730a3;}
     .dispatch-btn{width:100%;background:var(--wa);color:#fff;border:none;border-radius:10px;padding:12px;font-size:14px;font-family:'Heebo',sans-serif;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;}
     .dispatch-btn:disabled{background:#ccc;cursor:not-allowed;}
+    .field-error{color:#e53e3e;font-size:11px;margin-top:4px;text-align:right;}
     @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(26,26,26,.3)}50%{box-shadow:0 0 0 6px rgba(26,26,26,0)}}
     @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
     @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
@@ -229,6 +230,7 @@
     <div class="form-group"><label class="form-label">מספר טלפון</label><input class="form-input" id="reg-phone" placeholder="0501234567" type="tel" dir="ltr"/></div>
     <div class="form-group"><label class="form-label">אימייל</label><input class="form-input" id="reg-email" placeholder="israel@email.com" type="email" dir="ltr"/></div>
     <button class="btn-primary" onclick="registerUser()">הרשמה וקבלת 50% הנחה 🎉</button>
+    <button class="btn-secondary" onclick="closeWelcome();openLogin()">יש לי כבר חשבון — התחברות</button>
     <button class="btn-secondary" onclick="closeWelcome()">אולי בפעם אחרת</button>
   </div>
 </div>
@@ -425,6 +427,37 @@ function showLoading() { document.getElementById('loading').classList.add('show'
 function hideLoading() { document.getElementById('loading').classList.remove('show'); }
 function saveSession() { localStorage.setItem('f4s_session', JSON.stringify(currentUser)); }
 
+// ── VALIDATION ───────────────────────────────────────
+function validatePhone(phone) {
+  const clean = phone.replace(/[-\s]/g,'');
+  return /^0[2-9]\d{7,8}$/.test(clean) || /^972[2-9]\d{7,8}$/.test(clean);
+}
+function validateEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
+}
+function validateName(name) {
+  return name.length >= 2;
+}
+function validateAddress(address) {
+  return address.length >= 5;
+}
+
+function showFieldError(input, msg) {
+  input.style.borderColor = '#e53e3e';
+  let err = input.parentElement.querySelector('.field-error');
+  if(!err) { err = document.createElement('div'); err.className = 'field-error'; input.parentElement.appendChild(err); }
+  err.textContent = msg;
+}
+function clearFieldError(input) {
+  input.style.borderColor = '';
+  const err = input.parentElement.querySelector('.field-error');
+  if(err) err.remove();
+}
+function clearAllErrors(container) {
+  container.querySelectorAll('.field-error').forEach(e => e.remove());
+  container.querySelectorAll('.form-input').forEach(i => i.style.borderColor = '');
+}
+
 function isFirstOrder() { return currentUser && currentUser.order_count === 0; }
 function hasDiscount() { return isFirstOrder(); }
 function discountedPrice(p) { return hasDiscount() ? Math.round(p*0.5) : p; }
@@ -454,11 +487,22 @@ function openLogin() { document.getElementById('login-modal').classList.add('ope
 function closeLogin() { document.getElementById('login-modal').classList.remove('open'); document.body.style.overflow=''; }
 
 async function registerUser() {
-  const first = document.getElementById('reg-first').value.trim();
-  const last  = document.getElementById('reg-last').value.trim();
-  const phone = document.getElementById('reg-phone').value.trim();
-  const email = document.getElementById('reg-email').value.trim();
-  if(!first||!last||!phone||!email) { showToast('נא למלא את כל השדות'); return; }
+  const modal = document.getElementById('welcome-modal');
+  clearAllErrors(modal);
+  const firstEl = document.getElementById('reg-first');
+  const lastEl  = document.getElementById('reg-last');
+  const phoneEl = document.getElementById('reg-phone');
+  const emailEl = document.getElementById('reg-email');
+  const first = firstEl.value.trim();
+  const last  = lastEl.value.trim();
+  const phone = phoneEl.value.trim();
+  const email = emailEl.value.trim();
+  let valid = true;
+  if(!validateName(first)) { showFieldError(firstEl, 'שם פרטי חייב להכיל לפחות 2 תווים'); valid = false; }
+  if(!validateName(last))  { showFieldError(lastEl, 'שם משפחה חייב להכיל לפחות 2 תווים'); valid = false; }
+  if(!validatePhone(phone)) { showFieldError(phoneEl, 'מספר טלפון לא תקין (לדוגמה: 0501234567)'); valid = false; }
+  if(!validateEmail(email)) { showFieldError(emailEl, 'כתובת אימייל לא תקינה'); valid = false; }
+  if(!valid) return;
   showLoading();
   // Check if already exists
   const existing = await getUser(phone);
@@ -483,8 +527,11 @@ async function registerUser() {
 }
 
 async function loginUser() {
-  const phone = document.getElementById('login-phone').value.trim();
-  if(!phone) { showToast('נא להזין מספר טלפון'); return; }
+  const modal = document.getElementById('login-modal');
+  clearAllErrors(modal);
+  const phoneEl = document.getElementById('login-phone');
+  const phone = phoneEl.value.trim();
+  if(!validatePhone(phone)) { showFieldError(phoneEl, 'מספר טלפון לא תקין (לדוגמה: 0501234567)'); return; }
   showLoading();
   const user = await getUser(phone);
   hideLoading();
@@ -588,13 +635,22 @@ function closeCheckout() { document.getElementById('checkout-modal').classList.r
 document.getElementById('checkout-modal').addEventListener('click',function(e){if(e.target===this)closeCheckout();});
 
 async function sendWhatsApp() {
-  const name    = document.getElementById('f-name').value.trim();
-  const phone   = document.getElementById('f-phone').value.trim();
-  const address = document.getElementById('f-address').value.trim();
+  const modal = document.getElementById('checkout-modal');
+  clearAllErrors(modal);
+  const nameEl    = document.getElementById('f-name');
+  const phoneEl   = document.getElementById('f-phone');
+  const addressEl = document.getElementById('f-address');
+  const name    = nameEl.value.trim();
+  const phone   = phoneEl.value.trim();
+  const address = addressEl.value.trim();
   const apt     = document.getElementById('f-apt').value.trim();
   const time    = document.getElementById('f-time').value;
   const notes   = document.getElementById('f-notes').value.trim();
-  if(!name||!phone||!address) { showToast('נא למלא שם, טלפון וכתובת'); return; }
+  let valid = true;
+  if(!validateName(name))     { showFieldError(nameEl, 'שם מלא חייב להכיל לפחות 2 תווים'); valid = false; }
+  if(!validatePhone(phone))   { showFieldError(phoneEl, 'מספר טלפון לא תקין (לדוגמה: 0501234567)'); valid = false; }
+  if(!validateAddress(address)) { showFieldError(addressEl, 'כתובת חייבת להכיל לפחות 5 תווים (רחוב, מספר, עיר)'); valid = false; }
+  if(!valid) return;
   const disc=hasDiscount();
   const items=cart.map(i=>`  • ${i.name} × ${i.qty} = ₪${discountedPrice(i.price)*i.qty}${disc?' (מחיר רגיל ₪'+i.price*i.qty+')':''}`).join('\n');
   const msg=`🌸 *הזמנה חדשה - Flowers 4 Shabbat*
