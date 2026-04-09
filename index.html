@@ -312,6 +312,7 @@
       <div id="coupon-status" style="font-size:12px;margin-top:4px"></div>
     </div>
     <div id="checkout-discount-summary" style="background:#f0fdf4;border-radius:8px;padding:10px 14px;font-size:13px;color:#065f46;margin-bottom:10px;display:none"></div>
+    <div style="background:#f0fdf4;border-radius:8px;padding:10px 14px;font-size:13px;color:#065f46;margin-bottom:10px;text-align:center">🚚 משלוח חינם עד הדלת!</div>
     <button class="btn-wa" id="checkout-submit-btn" onclick="sendWhatsApp()">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.124.556 4.118 1.528 5.845L.057 23.571a.75.75 0 00.918.978l5.946-1.56A11.94 11.94 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75a9.713 9.713 0 01-4.953-1.356l-.355-.211-3.671.963.981-3.585-.232-.369A9.713 9.713 0 012.25 12C2.25 6.615 6.615 2.25 12 2.25S21.75 6.615 21.75 12 17.385 21.75 12 21.75z"/></svg>
       שלח הזמנה בוואטסאפ
@@ -391,16 +392,25 @@
     <p class="hero-sub">פרחים טריים, נשלחים באהבה</p>
     <h1 class="hero-title">דוכן הפרחים,<br/>עד פתח הבית.</h1>
   </div>
+  <div style="background:linear-gradient(135deg,#10b981,#059669);color:#fff;margin:0 16px 12px;border-radius:12px;padding:14px 18px;display:flex;align-items:center;gap:12px;box-shadow:0 4px 12px rgba(16,185,129,.25)">
+    <span style="font-size:32px">🚚</span>
+    <div><div style="font-size:16px;font-weight:500">משלוח חינם עד הדלת!</div><div style="font-size:12px;opacity:.85">ישירות עד אליכם, בלי עלויות נוספות</div></div>
+  </div>
   <p class="section-label">הפרחים שלנו</p>
   <div class="products-grid" id="products-grid"></div>
 </div>
 <div class="page" id="page-cart"><div class="page-title">העגלה שלי</div><div id="cart-content"></div></div>
 <div class="page" id="page-account"><div class="page-title">החשבון שלי</div><div id="account-content"></div></div>
+<div class="page" id="page-reviews">
+  <div class="page-title">המלצות</div>
+  <div id="reviews-page-content"></div>
+</div>
 <div class="page" id="page-admin"><div class="page-title">לוח ניהול</div><div id="admin-content"></div></div>
 
 <nav id="bottomnav">
   <button class="nav-tab active" id="tab-shop" onclick="goTo('shop')"><span class="icon">🌸</span>חנות</button>
   <button class="nav-tab" id="tab-cart" onclick="goTo('cart')"><span class="icon">🛒</span>עגלה</button>
+  <button class="nav-tab" id="tab-reviews" onclick="goTo('reviews')"><span class="icon">⭐</span>המלצות</button>
   <button class="nav-tab" id="tab-account" onclick="goTo('account')"><span class="icon">👤</span>חשבון</button>
   <button class="nav-tab" id="tab-admin" onclick="goTo('admin')" style="display:none"><span class="icon">⚙️</span>ניהול</button>
 </nav>
@@ -625,6 +635,72 @@ function renderReviews(id) {
   </div>`;
 }
 
+// ── GENERAL REVIEWS ──────────────────────────────────
+let generalReviews = JSON.parse(localStorage.getItem('f4s_general_reviews') || '[]');
+function saveGeneralReviews() { localStorage.setItem('f4s_general_reviews', JSON.stringify(generalReviews)); }
+
+let generalStars = 0;
+function setGeneralStar(star) {
+  generalStars = star;
+  for(let i=1;i<=5;i++) {
+    const el = document.getElementById('gstar-'+i);
+    if(el) el.classList.toggle('active', i <= star);
+  }
+}
+
+function submitGeneralReview() {
+  const text = document.getElementById('general-review-text').value.trim();
+  if(!generalStars) { showToast('נא לבחור דירוג כוכבים'); return; }
+  if(!text) { showToast('נא לכתוב המלצה'); return; }
+  const name = currentUser ? currentUser.first_name + ' ' + currentUser.last_name : 'אורח';
+  generalReviews.unshift({ stars: generalStars, text, name, date: new Date().toLocaleDateString('he-IL') });
+  saveGeneralReviews();
+  generalStars = 0;
+  document.getElementById('general-review-text').value = '';
+  showToast('ההמלצה נשמרה! תודה 🌸');
+  renderReviewsPage();
+}
+
+function renderReviewsPage() {
+  const el = document.getElementById('reviews-page-content');
+  // Collect all product reviews + general reviews
+  const allProductReviews = [];
+  Object.entries(reviews).forEach(([pid, revs]) => {
+    const p = products.find(x => x.id === parseInt(pid));
+    revs.forEach(r => allProductReviews.push({...r, product: p ? p.name : ''}));
+  });
+  const allReviews = [...generalReviews.map(r=>({...r, product:'כללי'})), ...allProductReviews];
+  allReviews.sort((a,b) => new Date(b.date.split('.').reverse().join('-')) - new Date(a.date.split('.').reverse().join('-')));
+
+  el.innerHTML = `
+    <div style="padding:20px 16px">
+      <div style="background:linear-gradient(135deg,#1a1a1a,#2a2a2a);color:#fff;border-radius:16px;padding:24px;margin-bottom:20px;text-align:center">
+        <div style="font-size:40px;margin-bottom:8px">⭐</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:24px;margin-bottom:4px">מה הלקוחות שלנו אומרים</div>
+        <div style="font-size:13px;opacity:.7">${allReviews.length} המלצות</div>
+      </div>
+
+      <div style="background:#fff;border-radius:12px;padding:20px;margin-bottom:20px;box-shadow:0 2px 8px rgba(0,0,0,.06)">
+        <div style="font-size:15px;font-weight:500;margin-bottom:12px;text-align:right">✍️ כתוב המלצה</div>
+        <div class="star-select" style="justify-content:center;margin-bottom:10px;font-size:28px">
+          ${[1,2,3,4,5].map(i=>`<span id="gstar-${i}" onclick="setGeneralStar(${i})" style="font-size:28px">★</span>`).join('')}
+        </div>
+        <textarea id="general-review-text" class="form-input" placeholder="ספרו לנו על החוויה שלכם..." style="min-height:80px;resize:vertical;font-size:14px"></textarea>
+        <button onclick="submitGeneralReview()" style="width:100%;background:var(--ink);color:#fff;border:none;border-radius:10px;padding:12px;font-size:14px;font-family:'Heebo',sans-serif;font-weight:500;cursor:pointer;margin-top:8px">שלח המלצה 🌸</button>
+      </div>
+
+      ${allReviews.length>0 ? allReviews.map(r=>`
+        <div style="background:#fff;border-radius:10px;padding:16px;margin-bottom:10px;box-shadow:0 1px 4px rgba(0,0,0,.05);text-align:right">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+            <span style="font-size:12px;color:var(--muted)">${r.date}</span>
+            <span style="color:#fbbf24;font-size:14px">${'★'.repeat(r.stars)}${'☆'.repeat(5-r.stars)}</span>
+          </div>
+          <div style="font-size:14px;line-height:1.6;margin-bottom:6px">${r.text}</div>
+          <div style="font-size:12px;color:var(--muted)">— ${r.name} ${r.product && r.product!=='כללי' ? '· על: '+r.product : ''}</div>
+        </div>`).join('') : '<div style="text-align:center;color:var(--muted);padding:40px">עדיין אין המלצות. היה הראשון! 🌸</div>'}
+    </div>`;
+}
+
 function shareProduct(id) {
   const p = products.find(x=>x.id===id); if(!p) return;
   const url = window.location.origin + window.location.pathname;
@@ -649,6 +725,7 @@ function goTo(page) {
   document.getElementById('tab-'+page).classList.add('active');
   if(page==='cart') renderCart();
   if(page==='account') renderAccount();
+  if(page==='reviews') renderReviewsPage();
   if(page==='admin') loadAdminOrders();
   window.scrollTo({top:0,behavior:'smooth'});
 }
