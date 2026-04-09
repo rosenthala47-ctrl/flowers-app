@@ -207,6 +207,14 @@
     .dispatch-btn:disabled{background:#ccc;cursor:not-allowed;}
     .housing-btn{flex:1;padding:12px;border-radius:10px;border:1px solid var(--border);background:#fff;font-family:'Heebo',sans-serif;font-size:14px;cursor:pointer;transition:all .2s;}
     .housing-btn.active{border-color:var(--ink);background:var(--ink);color:#fff;}
+    .reviews-section{margin-top:8px;border-top:1px solid var(--border);padding-top:8px;}
+    .review-item{font-size:11px;color:#555;padding:4px 0;border-bottom:1px solid #f5f5f3;}
+    .review-item .stars{color:#fbbf24;}
+    .review-item .author{color:var(--muted);font-size:10px;}
+    .review-form{display:flex;flex-direction:column;gap:4px;margin-top:6px;}
+    .star-select{display:flex;gap:2px;direction:ltr;}
+    .star-select span{cursor:pointer;font-size:18px;color:#ddd;transition:color .15s;}
+    .star-select span.active{color:#fbbf24;}
     .field-error{color:#e53e3e;font-size:11px;margin-top:4px;text-align:right;}
     @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(26,26,26,.3)}50%{box-shadow:0 0 0 6px rgba(26,26,26,0)}}
     @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
@@ -266,9 +274,9 @@
     <h2>פרטי המשלוח</h2>
     <p class="subtitle">מלא את הפרטים ונצור איתך קשר דרך וואטסאפ</p>
     <div id="order-summary-box" class="order-summary-box"></div>
-    <div class="friday-badge">📅 המשלוח מתבצע בימי שישי בלבד</div>
-    <div class="form-group"><label class="form-label">שעת משלוח</label><select class="form-select" id="f-time"><option value="10:00">10:00</option>
-<option value="10:30">10:30</option>
+    <div class="friday-badge">📅 המשלוח מתבצע בימי שישי החל מ-10:30 · אזור ירושלים — קטמון והסביבה</div>
+    <div id="orders-closed-badge" style="display:none;background:#fee2e2;color:#991b1b;border-radius:8px;padding:10px 14px;font-size:13px;text-align:right;margin-bottom:14px">🚫 ההזמנות סגורות כרגע. ניתן להזמין מיום ראשון עד רביעי בערב, והמשלוח מתבצע ביום שישי החל מ-10:30.</div>
+    <div class="form-group"><label class="form-label">שעת משלוח (יום שישי)</label><select class="form-select" id="f-time"><option value="10:30">10:30</option>
 <option value="11:00">11:00</option>
 <option value="11:30">11:30</option>
 <option value="12:00">12:00</option>
@@ -279,7 +287,7 @@
 <option value="14:30">14:30</option></select></div>
     <div class="form-group"><label class="form-label">שם מלא</label><input class="form-input" id="f-name" placeholder="ישראל ישראלי"/></div>
     <div class="form-group"><label class="form-label">מספר טלפון</label><input class="form-input" id="f-phone" placeholder="0501234567" type="tel" dir="ltr"/></div>
-    <div class="form-group"><label class="form-label">עיר</label><input class="form-input" id="f-city" placeholder="תל אביב"/></div>
+    <div class="form-group"><label class="form-label">שכונה</label><select class="form-select" id="f-city"><option value="">בחר שכונה</option><option value="קטמון">קטמון</option><option value="גוננים">גוננים</option><option value="תלפיות">תלפיות</option><option value="המושבה הגרמנית">המושבה הגרמנית</option><option value="רחביה">רחביה</option><option value="רסקו">רסקו</option><option value="ניות">ניות</option><option value="שי עגנון">שי עגנון</option></select></div>
     <div style="display:flex;gap:10px">
       <div class="form-group" style="flex:2"><label class="form-label">שם רחוב</label><input class="form-input" id="f-street" placeholder="הרצל"/></div>
       <div class="form-group" style="flex:1"><label class="form-label">מספר</label><input class="form-input" id="f-streetnum" placeholder="12" type="number" dir="ltr"/></div>
@@ -295,7 +303,16 @@
       <div class="form-group" style="flex:1"><label class="form-label">מספר דירה</label><input class="form-input" id="f-apt" placeholder="8" type="number" dir="ltr"/></div>
     </div>
     <div class="form-group"><label class="form-label">הערות (אופציונלי)</label><input class="form-input" id="f-notes" placeholder="לדוגמה: להשאיר בכניסה"/></div>
-    <button class="btn-wa" onclick="sendWhatsApp()">
+    <div class="form-group">
+      <label class="form-label">קוד קופון (אופציונלי)</label>
+      <div style="display:flex;gap:8px">
+        <input class="form-input" id="f-coupon" placeholder="הזן קוד קופון" dir="ltr" style="flex:1"/>
+        <button type="button" onclick="applyCoupon()" style="background:var(--ink);color:#fff;border:none;border-radius:8px;padding:0 16px;font-family:'Heebo',sans-serif;font-size:13px;cursor:pointer;white-space:nowrap">החל</button>
+      </div>
+      <div id="coupon-status" style="font-size:12px;margin-top:4px"></div>
+    </div>
+    <div id="checkout-discount-summary" style="background:#f0fdf4;border-radius:8px;padding:10px 14px;font-size:13px;color:#065f46;margin-bottom:10px;display:none"></div>
+    <button class="btn-wa" id="checkout-submit-btn" onclick="sendWhatsApp()">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.124.556 4.118 1.528 5.845L.057 23.571a.75.75 0 00.918.978l5.946-1.56A11.94 11.94 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75a9.713 9.713 0 01-4.953-1.356l-.355-.211-3.671.963.981-3.585-.232-.369A9.713 9.713 0 012.25 12C2.25 6.615 6.615 2.25 12 2.25S21.75 6.615 21.75 12 17.385 21.75 12 21.75z"/></svg>
       שלח הזמנה בוואטסאפ
     </button>
@@ -489,7 +506,139 @@ function clearAllErrors(container) {
 
 function isFirstOrder() { return currentUser && currentUser.order_count === 0; }
 function hasDiscount() { return isFirstOrder(); }
-function discountedPrice(p) { return hasDiscount() ? Math.round(p*0.5) : p; }
+
+// ── SHARES & COUPONS ─────────────────────────────────
+let shareCount = parseInt(localStorage.getItem('f4s_shares') || '0');
+let activeCoupon = JSON.parse(localStorage.getItem('f4s_coupon') || 'null');
+
+function getShareDiscount() { return Math.min(shareCount, 3) * 5; }
+function getCouponDiscount() { return activeCoupon ? activeCoupon.percent : 0; }
+function getTotalDiscountPercent() {
+  if(isFirstOrder()) return 50;
+  return getShareDiscount() + getCouponDiscount();
+}
+function discountedPrice(p) {
+  const pct = getTotalDiscountPercent();
+  return pct > 0 ? Math.round(p * (1 - pct/100)) : p;
+}
+
+// ── COUPONS ──────────────────────────────────────────
+let coupons = JSON.parse(localStorage.getItem('f4s_coupons') || '[]');
+function saveCoupons() { localStorage.setItem('f4s_coupons', JSON.stringify(coupons)); }
+
+function applyCoupon() {
+  const code = document.getElementById('f-coupon').value.trim().toUpperCase();
+  const statusEl = document.getElementById('coupon-status');
+  if(!code) { statusEl.innerHTML = '<span style="color:#e53e3e">נא להזין קוד</span>'; return; }
+  const coupon = coupons.find(c => c.code === code && c.active);
+  if(!coupon) { statusEl.innerHTML = '<span style="color:#e53e3e">קוד לא תקין או לא פעיל</span>'; activeCoupon = null; localStorage.removeItem('f4s_coupon'); return; }
+  if(coupon.uses >= coupon.maxUses) { statusEl.innerHTML = '<span style="color:#e53e3e">הקופון מוצה</span>'; return; }
+  activeCoupon = coupon;
+  localStorage.setItem('f4s_coupon', JSON.stringify(coupon));
+  statusEl.innerHTML = `<span style="color:#10b981">✓ קופון ${coupon.percent}% הופעל!</span>`;
+  updateCheckoutSummary();
+}
+
+function updateCheckoutSummary() {
+  const pct = getTotalDiscountPercent();
+  const el = document.getElementById('checkout-discount-summary');
+  if(pct > 0 && !isFirstOrder()) {
+    let parts = [];
+    if(getShareDiscount()>0) parts.push(`שיתוף: ${getShareDiscount()}%`);
+    if(getCouponDiscount()>0) parts.push(`קופון: ${getCouponDiscount()}%`);
+    el.style.display = 'block';
+    el.innerHTML = `🎉 הנחה פעילה: ${pct}% (${parts.join(' + ')})`;
+  } else if(isFirstOrder()) {
+    el.style.display = 'block';
+    el.innerHTML = '🎉 הנחת הצטרפות: 50%';
+  } else {
+    el.style.display = 'none';
+  }
+}
+
+function addCoupon() {
+  const code = document.getElementById('new-coupon-code').value.trim().toUpperCase();
+  const pct = parseInt(document.getElementById('new-coupon-pct').value);
+  const max = parseInt(document.getElementById('new-coupon-max').value) || 999;
+  if(!code || isNaN(pct)) { showToast('נא למלא קוד ואחוז'); return; }
+  coupons.push({ code, percent: pct, maxUses: max, uses: 0, active: true });
+  saveCoupons();
+  showToast('קופון ' + code + ' נוצר! 🎫');
+  renderAdmin();
+}
+
+function toggleCoupon(code) {
+  const c = coupons.find(x => x.code === code);
+  if(c) { c.active = !c.active; saveCoupons(); renderAdmin(); }
+}
+
+function deleteCoupon(code) {
+  coupons = coupons.filter(x => x.code !== code);
+  saveCoupons(); renderAdmin();
+}
+
+// ── REVIEWS ──────────────────────────────────────────
+let reviews = JSON.parse(localStorage.getItem('f4s_reviews') || '{}');
+function saveReviews() { localStorage.setItem('f4s_reviews', JSON.stringify(reviews)); }
+
+function getProductReviews(id) { return reviews[id] || []; }
+function getAvgRating(id) {
+  const r = getProductReviews(id);
+  if(r.length===0) return 0;
+  return (r.reduce((s,x)=>s+x.stars,0)/r.length).toFixed(1);
+}
+
+let reviewStars = {};
+function setReviewStar(productId, star) {
+  reviewStars[productId] = star;
+  for(let i=1;i<=5;i++) {
+    const el = document.getElementById(`star-${productId}-${i}`);
+    if(el) el.classList.toggle('active', i <= star);
+  }
+}
+
+function submitReview(productId) {
+  const stars = reviewStars[productId];
+  const textEl = document.getElementById('review-text-'+productId);
+  const text = textEl ? textEl.value.trim() : '';
+  if(!stars) { showToast('נא לבחור דירוג כוכבים'); return; }
+  const name = currentUser ? currentUser.first_name : 'אורח';
+  if(!reviews[productId]) reviews[productId] = [];
+  reviews[productId].push({ stars, text, name, date: new Date().toLocaleDateString('he-IL') });
+  saveReviews();
+  reviewStars[productId] = 0;
+  showToast('הביקורת נשמרה! תודה 🌸');
+  renderShop();
+}
+
+function renderReviews(id) {
+  const r = getProductReviews(id);
+  const avg = getAvgRating(id);
+  return `<div class="reviews-section">
+    ${avg>0?`<div style="font-size:11px;margin-bottom:4px"><span style="color:#fbbf24">${'★'.repeat(Math.round(avg))}${'☆'.repeat(5-Math.round(avg))}</span> <span style="color:var(--muted)">${avg} (${r.length})</span></div>`:''}
+    ${r.slice(-2).map(rv=>`<div class="review-item"><span class="stars">${'★'.repeat(rv.stars)}</span> ${rv.text} <span class="author">— ${rv.name}</span></div>`).join('')}
+    <div class="review-form">
+      <div class="star-select">${[1,2,3,4,5].map(i=>`<span id="star-${id}-${i}" onclick="setReviewStar(${id},${i})">★</span>`).join('')}</div>
+      <input id="review-text-${id}" class="form-input" placeholder="כתוב ביקורת קצרה..." style="font-size:11px;padding:6px 8px"/>
+      <button onclick="submitReview(${id})" style="background:var(--ink);color:#fff;border:none;border-radius:6px;padding:5px 10px;font-size:11px;font-family:'Heebo',sans-serif;cursor:pointer;align-self:flex-start">שלח ביקורת</button>
+    </div>
+  </div>`;
+}
+
+function shareProduct(id) {
+  const p = products.find(x=>x.id===id); if(!p) return;
+  const url = window.location.origin + window.location.pathname;
+  const msg = `🌸 תראה/י איזה זר יפה! ${p.name} — רק ₪${p.price}\n${url}`;
+  window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
+  if(shareCount < 3) {
+    shareCount++;
+    localStorage.setItem('f4s_shares', shareCount);
+    showToast(`שיתפת! קיבלת ${getShareDiscount()}% הנחה (${shareCount}/3) 🎉`);
+    renderShop();
+  } else {
+    showToast('שיתפת! כבר יש לך את ההנחה המקסימלית 15% 🌸');
+  }
+}
 
 // ── NAV ───────────────────────────────────────────────
 function goTo(page) {
@@ -647,8 +796,27 @@ function setHousing(type) {
   document.getElementById('building-fields').style.display = type==='building' ? 'flex' : 'none';
 }
 
+function isOrdersClosed() {
+  const now = new Date();
+  const day = now.getDay(); // 0=Sun,1=Mon,...3=Wed,4=Thu,5=Fri,6=Sat
+  const hour = now.getHours();
+  const min = now.getMinutes();
+  // Closed from Wednesday 20:00 until Friday 10:30
+  if(day===3 && hour>=20) return true; // Wed evening
+  if(day===4) return true; // Thursday all day
+  if(day===5 && (hour<10 || (hour===10 && min<30))) return true; // Friday before 10:30
+  if(day===6) return true; // Saturday
+  return false;
+}
+
 function openCheckout() {
   if(cart.length===0) return;
+  const closed = isOrdersClosed();
+  document.getElementById('orders-closed-badge').style.display = closed ? 'block' : 'none';
+  const submitBtn = document.getElementById('checkout-submit-btn');
+  submitBtn.disabled = closed;
+  submitBtn.style.opacity = closed ? '0.5' : '1';
+  submitBtn.style.cursor = closed ? 'not-allowed' : 'pointer';
   if(currentUser) {
     document.getElementById('f-name').value=currentUser.first_name+' '+currentUser.last_name;
     document.getElementById('f-phone').value=currentUser.phone;
@@ -716,6 +884,12 @@ ${items}
 
 💰 *סה"כ: ₪${cartTotal()}*${disc?' (לאחר הנחה 50%)':''}`;
   window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`,'_blank');
+  // Count coupon use
+  if(activeCoupon) {
+    const c = coupons.find(x => x.code === activeCoupon.code);
+    if(c) { c.uses++; saveCoupons(); }
+    activeCoupon = null; localStorage.removeItem('f4s_coupon');
+  }
   const address_val = address + aptInfo;
   await addAdminOrder(name, phone, cart.map(i=>i.name).join(', '), cartTotal(), time, address_val);
   // Update order count in Supabase
@@ -759,13 +933,15 @@ function renderShop() {
         <div class="product-desc">${p.desc}</div>
         <div class="price-wrap">
           <span class="product-price">₪${dp}</span>
-          ${disc?`<span class="product-price-orig">₪${p.price}</span><span class="discount-tag">-50%</span>`:''}
+          ${dp<p.price?`<span class="product-price-orig">₪${p.price}</span><span class="discount-tag">-${getTotalDiscountPercent()}%</span>`:''}
         </div>
         <div class="btns-wrap">
           <button class="add-btn${inCart?' added':''}" onclick="addToCart(${p.id})">${inCart?'✓ בעגלה':'+ הוסף לעגלה'}</button>
           <button class="buynow-btn" onclick="buyNowDirect(${p.id})">קנה עכשיו</button>
+          <button style="background:none;border:1px solid #25D366;color:#25D366;border-radius:20px;padding:6px 12px;font-size:11px;font-family:'Heebo',sans-serif;cursor:pointer" onclick="event.stopPropagation();shareProduct(${p.id})">📤 שתף וקבל 5% הנחה</button>
         </div>
         <div class="stock-note">* בכפוף למלאי. במידה וזר זה אינו קיים במלאי, הזמנתכם תבוטל.</div>
+        ${renderReviews(p.id)}
       </div></div>`;
   }).join('');
 }
@@ -855,24 +1031,54 @@ async function loadAdminOrders() {
   renderAdmin();
 }
 
+function getOrderSummary() {
+  const pendingOrders = adminOrders.filter(o => o.status==='pending');
+  const summary = {};
+  pendingOrders.forEach(o => {
+    (o.items||'').split(', ').forEach(item => {
+      if(item) summary[item] = (summary[item]||0) + 1;
+    });
+  });
+  return summary;
+}
+
 function renderAdmin() {
   const el=document.getElementById('admin-content');
   const totalStock=products.reduce((s,p)=>s+p.stock,0);
   const pending=adminOrders.filter(o=>o.status==='pending').length;
+  const totalRevenue = adminOrders.reduce((s,o)=>s+(o.total||0),0);
+  const summary = getOrderSummary();
   el.innerHTML=`
     <div class="stats-grid">
-      <div class="stat-card"><div class="stat-num">${products.length}</div><div class="stat-label">מוצרים</div></div>
-      <div class="stat-card"><div class="stat-num">${totalStock}</div><div class="stat-label">במלאי</div></div>
+      <div class="stat-card"><div class="stat-num">${adminOrders.length}</div><div class="stat-label">הזמנות</div></div>
       <div class="stat-card"><div class="stat-num">${pending}</div><div class="stat-label">ממתינים</div></div>
+      <div class="stat-card"><div class="stat-num">₪${totalRevenue}</div><div class="stat-label">הכנסות</div></div>
     </div>
+
+    ${Object.keys(summary).length>0?`
+    <p class="admin-section-title">📋 סיכום להכנה — מה להביא</p>
+    <div style="background:#fff;margin:0 16px 12px;border-radius:12px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,.06)">
+      ${Object.entries(summary).map(([name,qty])=>`
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f0f0ec">
+          <span style="font-size:15px">${name}</span>
+          <span style="background:var(--ink);color:#fff;border-radius:20px;padding:4px 14px;font-size:14px;font-weight:500">${qty}</span>
+        </div>`).join('')}
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0 0;font-weight:500">
+        <span>סה"כ זרים להכנה</span>
+        <span>${Object.values(summary).reduce((a,b)=>a+b,0)}</span>
+      </div>
+    </div>`:''}
+
     ${adminOrders.length>0?`
-    <p class="admin-section-title">הזמנות לשליחה</p>
+    <p class="admin-section-title">הזמנות</p>
     <div class="admin-orders-list">
       ${adminOrders.map(o=>`<div class="admin-order-card">
         <div class="admin-order-top">
           <div>
-            <div class="admin-order-name">${o.name}</div>
-            <div class="admin-order-meta">📞 ${o.phone} · ⏰ ${o.time} · 💰 ₪${o.total}</div>
+            <div class="admin-order-name">${o.name||o.customer_name}</div>
+            <div class="admin-order-meta">📞 ${o.phone}</div>
+            <div class="admin-order-meta">📍 ${o.address||'לא צוין'}</div>
+            <div class="admin-order-meta">⏰ ${o.time||o.delivery_time} · 💰 ₪${o.total}</div>
             <div class="admin-order-meta">🛒 ${o.items}</div>
           </div>
           <span class="admin-order-status status-${o.status}">${o.status==='pending'?'ממתין':o.status==='delivering'?'בדרך':'נמסר'}</span>
@@ -894,7 +1100,72 @@ function renderAdmin() {
     <div class="add-product-form">
       <input id="new-name" placeholder="שם המוצר"/>
       <div class="add-row"><input id="new-price" placeholder="מחיר ₪" type="number"/><input id="new-stock" placeholder="כמות" type="number"/><button class="add-submit" onclick="addProduct()">+ הוסף</button></div>
+    </div>
+
+    <p class="admin-section-title">🎫 קופונים</p>
+    <div style="padding:0 16px">
+      ${coupons.map(c=>`<div style="background:#fff;border-radius:8px;padding:12px 16px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 1px 4px rgba(0,0,0,.05)">
+        <div>
+          <div style="font-size:15px;font-weight:500;direction:ltr;display:inline">${c.code}</div>
+          <div style="font-size:12px;color:var(--muted)">${c.percent}% הנחה · ${c.uses}/${c.maxUses} שימושים · ${c.active?'<span style="color:#10b981">פעיל</span>':'<span style="color:#e53e3e">מושבת</span>'}</div>
+        </div>
+        <div style="display:flex;gap:6px">
+          <button onclick="toggleCoupon('${c.code}')" style="background:none;border:1px solid var(--border);padding:5px 10px;border-radius:6px;font-size:11px;cursor:pointer;font-family:'Heebo',sans-serif">${c.active?'השבת':'הפעל'}</button>
+          <button onclick="deleteCoupon('${c.code}')" style="background:none;border:1px solid #e53e3e;color:#e53e3e;padding:5px 10px;border-radius:6px;font-size:11px;cursor:pointer;font-family:'Heebo',sans-serif">מחק</button>
+        </div>
+      </div>`).join('')}
+      <div class="add-product-form" style="margin:0">
+        <div class="add-row" style="flex-wrap:wrap">
+          <input id="new-coupon-code" placeholder="קוד (לדוג׳ SHABBAT20)" style="flex:2;min-width:120px" dir="ltr"/>
+          <input id="new-coupon-pct" placeholder="% הנחה" type="number" style="flex:1;min-width:70px"/>
+          <input id="new-coupon-max" placeholder="מקס שימושים" type="number" style="flex:1;min-width:80px"/>
+          <button class="add-submit" onclick="addCoupon()">+ צור קופון</button>
+        </div>
+      </div>
+    </div>
+
+    <p class="admin-section-title">📊 סטטיסטיקות</p>
+    <div style="padding:0 16px">
+      <div style="background:#fff;border-radius:12px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,.06);margin-bottom:12px">
+        <div style="font-size:13px;color:var(--muted);margin-bottom:12px">הכי נמכר</div>
+        ${(()=>{
+          const sales={};
+          adminOrders.forEach(o=>(o.items||'').split(', ').forEach(item=>{if(item)sales[item]=(sales[item]||0)+1;}));
+          const sorted=Object.entries(sales).sort((a,b)=>b[1]-a[1]);
+          return sorted.length>0 ? sorted.map(([name,qty],i)=>
+            '<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f5f5f3">' +
+            '<span style="font-size:14px">'+(i+1)+'. '+name+'</span>' +
+            '<span style="font-size:14px;font-weight:500">'+qty+' יח׳</span></div>'
+          ).join('') : '<div style="color:var(--muted);font-size:13px">אין נתונים עדיין</div>';
+        })()}
+      </div>
+      <div style="display:flex;gap:10px;margin-bottom:12px">
+        <div style="flex:1;background:#fff;border-radius:12px;padding:16px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.06)">
+          <div style="font-size:28px;font-weight:300">₪${adminOrders.reduce((s,o)=>s+(o.total||0),0)}</div>
+          <div style="font-size:11px;color:var(--muted)">סה"כ הכנסות</div>
+        </div>
+        <div style="flex:1;background:#fff;border-radius:12px;padding:16px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.06)">
+          <div style="font-size:28px;font-weight:300">${adminOrders.length}</div>
+          <div style="font-size:11px;color:var(--muted)">סה"כ הזמנות</div>
+        </div>
+      </div>
+      <button onclick="exportToCSV()" style="width:100%;background:var(--ink);color:#fff;border:none;border-radius:10px;padding:14px;font-size:14px;font-family:'Heebo',sans-serif;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px">📥 ייצוא הזמנות לאקסל (CSV)</button>
     </div>`;
+}
+
+function exportToCSV() {
+  const BOM = '\\uFEFF';
+  const header = 'שם,טלפון,כתובת,פריטים,סכום,שעת משלוח,סטטוס,תאריך';
+  const rows = adminOrders.map(o =>
+    [o.name||o.customer_name, o.phone, '"'+(o.address||'').replace(/"/g,'""')+'"', '"'+(o.items||'')+'"', o.total, o.time||o.delivery_time, o.status==='pending'?'ממתין':o.status==='delivering'?'בדרך':'נמסר', o.date||''].join(',')
+  );
+  const csv = BOM + header + '\\n' + rows.join('\\n');
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'orders-' + new Date().toISOString().slice(0,10) + '.csv';
+  a.click(); URL.revokeObjectURL(url);
+  showToast('הקובץ הורד! 📥');
 }
 
 function saveEdit(id) {
@@ -1004,17 +1275,29 @@ async function addAdminOrder(name, phone, items, total, time, address) {
   adminOrders.unshift({...order, name, date: new Date().toLocaleDateString('he-IL')});
 }
 
+// ── PUSH NOTIFICATIONS ───────────────────────────────
+function requestNotificationPermission() {
+  if('Notification' in window && Notification.permission === 'default') {
+    Notification.requestPermission();
+  }
+}
+
+function sendPushNotification(title, body) {
+  if('Notification' in window && Notification.permission === 'granted') {
+    new Notification(title, { body, icon: 'icon.svg', badge: 'icon.svg' });
+  }
+}
+
 function dispatchOrder(id) {
   const order = adminOrders.find(o => o.id === id);
   if(!order) return;
   order.status = 'delivering';
   saveAdminOrders();
-  // Update in Supabase
   sbFetch('orders?id=eq.' + id, 'PATCH', {status: 'delivering'});
   const phone = '972' + order.phone.replace(/^0/,'').replace(/[-\s]/g,'');
   const trackUrl = window.location.origin + window.location.pathname + '?track=' + id;
   const msg = '🌸 *Flowers 4 Shabbat - המשלוח בדרך!*\n\n'
-    + 'שלום ' + order.name + '! 👋\n\n'
+    + 'שלום ' + (order.name||order.customer_name) + '! 👋\n\n'
     + '🛵 *הפרחים שלך יצאו לדרך!*\n'
     + '⏱️ זמן משוער להגעה: *15-20 דקות*\n'
     + '📞 *מספר השליח:* 0512626522\n\n'
@@ -1023,6 +1306,8 @@ function dispatchOrder(id) {
     + 'תהנו מהפרחים! 🌸';
   const waUrl = 'https://wa.me/' + phone + '?text=' + encodeURIComponent(msg);
   window.open(waUrl, '_blank');
+  // Send push notification to current browser (for customer if they have the site open)
+  sendPushNotification('🌸 הפרחים בדרך!', 'השליח יצא לדרך עם הזר שלך. זמן משוער: 15-20 דקות');
   renderAdmin();
   showToast('הודעה נשלחה ללקוח! 🛵');
 }
@@ -1093,6 +1378,7 @@ if(adminUnlocked) document.getElementById('tab-admin').style.display = '';
 // ── INIT ──────────────────────────────────────────────
 renderShop();
 if(!currentUser) setTimeout(openWelcome, 1500);
+if(currentUser) requestNotificationPermission();
 </script>
 </body>
 </html>
