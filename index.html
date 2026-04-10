@@ -1176,7 +1176,10 @@ function renderAdmin() {
         `:o.status==='confirmed'?`
           <div style="text-align:center;color:#3b82f6;font-size:12px;padding:4px;margin-bottom:6px">✅ הלקוח קיבל אישור הזמנה</div>
           <button class="dispatch-btn" onclick="dispatchOrder('${o.id}')">🛵 שלח הודעה — המשלוח בדרך!</button>
-        `:o.status==='delivering'?`<div style="text-align:center;color:#10b981;font-size:13px;padding:8px">✓ הודעת משלוח נשלחה</div>`
+        `:o.status==='delivering'?`
+          <div style="text-align:center;color:#10b981;font-size:12px;padding:4px;margin-bottom:6px">✓ הודעת משלוח נשלחה</div>
+          <button class="dispatch-btn" style="background:#8b5cf6" onclick="deliveredOrder('${o.id}')">🌸 נמסר — שלח הודעה ובקשת ביקורת</button>
+        `:o.status==='delivered'?`<div style="text-align:center;color:#8b5cf6;font-size:13px;padding:8px">✓ נמסר + נשלחה בקשת ביקורת</div>`
         :`<div style="text-align:center;color:#10b981;font-size:13px;padding:8px">✓ נמסר</div>`}
       </div>`).join('')}
     </div>`:''}
@@ -1270,6 +1273,18 @@ function renderAdmin() {
             <td style="padding:8px;text-align:right"><span style="padding:3px 8px;border-radius:12px;font-size:11px;${o.status==='pending'?'background:#fef3c7;color:#92400e':o.status==='confirmed'?'background:#dbeafe;color:#1e40af':o.status==='delivering'?'background:#d1fae5;color:#065f46':'background:#e0e7ff;color:#3730a3'}">${o.status==='pending'?'ממתין':o.status==='confirmed'?'אושר':o.status==='delivering'?'בדרך':'נמסר'}</span></td>
           </tr>`).join('') : '<tr><td colspan="8" style="padding:20px;text-align:center;color:var(--muted)">אין הזמנות השבוע</td></tr>'}
         </tbody>
+        ${adminOrders.length>0?`<tfoot>
+          <tr><td colspan="8" style="padding:16px;background:#f9f9f7">
+            <div style="font-size:13px;font-weight:500;margin-bottom:8px">📦 סיכום — מה להביא מהספק:</div>
+            ${(()=>{
+              const s={};
+              adminOrders.forEach(o=>(o.items||'').split(', ').forEach(item=>{if(item)s[item]=(s[item]||0)+1;}));
+              return Object.entries(s).map(([name,qty])=>
+                '<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #eee"><span>'+name+'</span><strong>× '+qty+'</strong></div>'
+              ).join('')+'<div style="display:flex;justify-content:space-between;padding:8px 0 0;font-weight:700;font-size:14px"><span>סה"כ זרים</span><span>'+Object.values(s).reduce((a,b)=>a+b,0)+'</span></div>';
+            })()}
+          </td></tr>
+        </tfoot>`:''}
       </table>
     </div>
     <div style="padding:0 16px;margin-bottom:16px">
@@ -1384,10 +1399,12 @@ function renderDeliverySteps(activeIdx) {
 }
 
 // ── ADMIN DISPATCH ────────────────────────────────────
-// One-time reset of all orders (April 2026)
-if(!localStorage.getItem('f4s_reset_apr2026')) {
+// One-time reset of all orders (April 2026 v2)
+if(!localStorage.getItem('f4s_reset_apr2026_v2')) {
   localStorage.removeItem('f4s_admin_orders');
-  localStorage.setItem('f4s_reset_apr2026', 'true');
+  localStorage.setItem('f4s_reset_apr2026_v2', 'true');
+  // Also clear Supabase orders
+  sbFetch('orders?id=neq.KEEP_NONE', 'DELETE');
 }
 let adminOrders = JSON.parse(localStorage.getItem('f4s_admin_orders') || '[]');
 
@@ -1423,6 +1440,27 @@ function sendPushNotification(title, body) {
   if('Notification' in window && Notification.permission === 'granted') {
     new Notification(title, { body, icon: 'icon.svg', badge: 'icon.svg' });
   }
+}
+
+function deliveredOrder(id) {
+  const order = adminOrders.find(o => o.id === id);
+  if(!order) return;
+  order.status = 'delivered';
+  saveAdminOrders();
+  sbFetch('orders?id=eq.' + id, 'PATCH', {status: 'delivered'});
+  const phone = '972' + order.phone.replace(/^0/,'').replace(/[-\s]/g,'');
+  const reviewUrl = window.location.origin + window.location.pathname + '?review=1';
+  const msg = '🌸 *Flowers 4 Shabbat*\n\n'
+    + 'שלום ' + (order.name||order.customer_name) + '! 👋\n\n'
+    + '✅ *הזר נמסר בהצלחה!*\n'
+    + 'מקווים שנהניתם מהפרחים 💕\n\n'
+    + '⭐ *נשמח לשמוע מכם!*\n'
+    + 'אם אהבתם, כתבו לנו ביקורת קצרה:\n'
+    + '👉 ' + reviewUrl + '\n\n'
+    + 'תודה שבחרתם בנו ושבת שלום! 🌸';
+  window.open('https://wa.me/' + phone + '?text=' + encodeURIComponent(msg), '_blank');
+  renderAdmin();
+  showToast('הודעת מסירה + ביקורת נשלחה! 🌸');
 }
 
 function confirmOrder(id) {
@@ -1473,6 +1511,9 @@ function dispatchOrder(id) {
 const urlParams = new URLSearchParams(window.location.search);
 if(urlParams.get('track')) {
   setTimeout(() => openDelivery(18), 500);
+}
+if(urlParams.get('review')) {
+  setTimeout(() => goTo('reviews'), 500);
 }
 
 // ── PWA ───────────────────────────────────────────────
