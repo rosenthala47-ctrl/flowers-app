@@ -275,7 +275,7 @@
     <p class="subtitle">מלא את הפרטים ונצור איתך קשר דרך וואטסאפ</p>
     <div id="order-summary-box" class="order-summary-box"></div>
     <div class="friday-badge">📅 המשלוח מתבצע בימי שישי החל מ-10:30 · אזור ירושלים — קטמון והסביבה</div>
-    <div id="orders-closed-badge" style="display:none;background:#fee2e2;color:#991b1b;border-radius:8px;padding:10px 14px;font-size:13px;text-align:right;margin-bottom:14px">🚫 ההזמנות סגורות כרגע. ניתן להזמין מיום ראשון עד רביעי בערב, והמשלוח מתבצע ביום שישי החל מ-10:30.</div>
+    <div id="orders-closed-badge" style="display:none;background:#fee2e2;color:#991b1b;border-radius:8px;padding:10px 14px;font-size:13px;text-align:right;margin-bottom:14px">🚫 ההזמנות סגורות כרגע. ניתן להזמין ממוצ״ש עד רביעי בערב, והמשלוח מתבצע ביום שישי החל מ-10:30.</div>
     <div class="form-group"><label class="form-label">שעת משלוח (יום שישי)</label><select class="form-select" id="f-time"><option value="10:30">10:30</option>
 <option value="11:00">11:00</option>
 <option value="11:30">11:30</option>
@@ -521,7 +521,7 @@ function hasDiscount() { return isFirstOrder(); }
 let shareCount = parseInt(localStorage.getItem('f4s_shares') || '0');
 let activeCoupon = JSON.parse(localStorage.getItem('f4s_coupon') || 'null');
 
-function getShareDiscount() { return Math.min(shareCount, 3) * 5; }
+function getShareDiscount() { return Math.min(shareCount, 1) * 5; }
 function getCouponDiscount() { return activeCoupon ? activeCoupon.percent : 0; }
 function getTotalDiscountPercent() {
   if(isFirstOrder()) return 50;
@@ -701,20 +701,26 @@ function renderReviewsPage() {
     </div>`;
 }
 
+let sharePending = false;
 function shareProduct(id) {
   const p = products.find(x=>x.id===id); if(!p) return;
+  if(shareCount >= 1) { showToast('כבר קיבלת הנחת שיתוף 5% 🌸'); return; }
   const url = window.location.origin + window.location.pathname;
   const msg = `🌸 תראה/י איזה זר יפה! ${p.name} — רק ₪${p.price}\n${url}`;
+  sharePending = true;
   window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
-  if(shareCount < 3) {
-    shareCount++;
-    localStorage.setItem('f4s_shares', shareCount);
-    showToast(`שיתפת! קיבלת ${getShareDiscount()}% הנחה (${shareCount}/3) 🎉`);
-    renderShop();
-  } else {
-    showToast('שיתפת! כבר יש לך את ההנחה המקסימלית 15% 🌸');
-  }
+  showToast('שתף בוואטסאפ כדי לקבל 5% הנחה...');
 }
+// When user returns from WhatsApp, confirm the share
+document.addEventListener('visibilitychange', function() {
+  if(!document.hidden && sharePending) {
+    sharePending = false;
+    shareCount = 1;
+    localStorage.setItem('f4s_shares', '1');
+    showToast('שיתפת! קיבלת 5% הנחה 🎉');
+    renderShop();
+  }
+});
 
 // ── NAV ───────────────────────────────────────────────
 function goTo(page) {
@@ -878,11 +884,12 @@ function isOrdersClosed() {
   const day = now.getDay(); // 0=Sun,1=Mon,...3=Wed,4=Thu,5=Fri,6=Sat
   const hour = now.getHours();
   const min = now.getMinutes();
-  // Closed from Wednesday 20:00 until Friday 10:30
+  // Open from Saturday evening (after 20:00) until Wednesday 20:00
+  // Closed: Wed 20:00 → Sat 20:00
   if(day===3 && hour>=20) return true; // Wed evening
-  if(day===4) return true; // Thursday all day
-  if(day===5 && (hour<10 || (hour===10 && min<30))) return true; // Friday before 10:30
-  if(day===6) return true; // Saturday
+  if(day===4) return true; // Thursday
+  if(day===5) return true; // Friday
+  if(day===6 && hour<20) return true; // Saturday before 20:00
   return false;
 }
 
@@ -1015,7 +1022,7 @@ function renderShop() {
         <div class="btns-wrap">
           <button class="add-btn${inCart?' added':''}" onclick="addToCart(${p.id})">${inCart?'✓ בעגלה':'+ הוסף לעגלה'}</button>
           <button class="buynow-btn" onclick="buyNowDirect(${p.id})">קנה עכשיו</button>
-          <button style="background:none;border:1px solid #25D366;color:#25D366;border-radius:20px;padding:6px 12px;font-size:11px;font-family:'Heebo',sans-serif;cursor:pointer" onclick="event.stopPropagation();shareProduct(${p.id})">📤 שתף וקבל 5% הנחה</button>
+          ${shareCount>=1?'':'<button style="background:none;border:1px solid #25D366;color:#25D366;border-radius:20px;padding:6px 12px;font-size:11px;font-family:\'Heebo\',sans-serif;cursor:pointer" onclick="event.stopPropagation();shareProduct('+p.id+')">📤 שתף וקבל 5% הנחה</button>'}
         </div>
         <div class="stock-note">* בכפוף למלאי. במידה וזר זה אינו קיים במלאי, הזמנתכם תבוטל.</div>
         ${renderReviews(p.id)}
@@ -1226,24 +1233,64 @@ function renderAdmin() {
           <div style="font-size:11px;color:var(--muted)">סה"כ הזמנות</div>
         </div>
       </div>
-      <button onclick="exportToCSV()" style="width:100%;background:var(--ink);color:#fff;border:none;border-radius:10px;padding:14px;font-size:14px;font-family:'Heebo',sans-serif;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px">📥 ייצוא הזמנות לאקסל (CSV)</button>
+    </div>
+
+    <p class="admin-section-title">📋 טבלת הזמנות — שבוע נוכחי</p>
+    <div style="padding:0 16px;overflow-x:auto;margin-bottom:16px">
+      <table style="width:100%;border-collapse:collapse;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.06);font-size:12px;min-width:600px">
+        <thead>
+          <tr style="background:var(--ink);color:#fff">
+            <th style="padding:10px 8px;text-align:right">#</th>
+            <th style="padding:10px 8px;text-align:right">שם</th>
+            <th style="padding:10px 8px;text-align:right">טלפון</th>
+            <th style="padding:10px 8px;text-align:right">כתובת</th>
+            <th style="padding:10px 8px;text-align:right">פריטים</th>
+            <th style="padding:10px 8px;text-align:right">סכום</th>
+            <th style="padding:10px 8px;text-align:right">שעה</th>
+            <th style="padding:10px 8px;text-align:right">סטטוס</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${adminOrders.length>0 ? adminOrders.map((o,i)=>`<tr style="border-bottom:1px solid #f0f0ec${i%2===1?';background:#fafaf8':''}">
+            <td style="padding:8px;text-align:right;color:var(--muted)">${i+1}</td>
+            <td style="padding:8px;text-align:right;font-weight:500">${o.name||o.customer_name}</td>
+            <td style="padding:8px;text-align:right;direction:ltr">${o.phone}</td>
+            <td style="padding:8px;text-align:right">${o.address||'—'}</td>
+            <td style="padding:8px;text-align:right">${o.items}</td>
+            <td style="padding:8px;text-align:right;font-weight:500">₪${o.total}</td>
+            <td style="padding:8px;text-align:right">${o.time||o.delivery_time}</td>
+            <td style="padding:8px;text-align:right"><span style="padding:3px 8px;border-radius:12px;font-size:11px;${o.status==='pending'?'background:#fef3c7;color:#92400e':o.status==='delivering'?'background:#d1fae5;color:#065f46':'background:#e0e7ff;color:#3730a3'}">${o.status==='pending'?'ממתין':o.status==='delivering'?'בדרך':'נמסר'}</span></td>
+          </tr>`).join('') : '<tr><td colspan="8" style="padding:20px;text-align:center;color:var(--muted)">אין הזמנות השבוע</td></tr>'}
+        </tbody>
+      </table>
+    </div>
+    <div style="padding:0 16px;margin-bottom:16px">
+      <button onclick="resetWeeklyOrders()" style="width:100%;background:#e53e3e;color:#fff;border:none;border-radius:10px;padding:12px;font-size:13px;font-family:'Heebo',sans-serif;cursor:pointer">🗑️ איפוס הזמנות שבועי</button>
     </div>`;
 }
 
-function exportToCSV() {
-  const BOM = '\\uFEFF';
-  const header = 'שם,טלפון,כתובת,פריטים,סכום,שעת משלוח,סטטוס,תאריך';
-  const rows = adminOrders.map(o =>
-    [o.name||o.customer_name, o.phone, '"'+(o.address||'').replace(/"/g,'""')+'"', '"'+(o.items||'')+'"', o.total, o.time||o.delivery_time, o.status==='pending'?'ממתין':o.status==='delivering'?'בדרך':'נמסר', o.date||''].join(',')
-  );
-  const csv = BOM + header + '\\n' + rows.join('\\n');
-  const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = 'orders-' + new Date().toISOString().slice(0,10) + '.csv';
-  a.click(); URL.revokeObjectURL(url);
-  showToast('הקובץ הורד! 📥');
+function resetWeeklyOrders() {
+  if(!confirm('בטוח? זה ימחק את כל ההזמנות בטבלה')) return;
+  adminOrders = [];
+  saveAdminOrders();
+  renderAdmin();
+  showToast('ההזמנות אופסו! 🗑️');
 }
+
+// Auto-reset orders on Saturday evening
+function checkWeeklyReset() {
+  const now = new Date();
+  const day = now.getDay();
+  const hour = now.getHours();
+  const lastReset = localStorage.getItem('f4s_last_reset') || '';
+  const today = now.toISOString().slice(0,10);
+  if(day===6 && hour>=20 && lastReset !== today) {
+    adminOrders = [];
+    saveAdminOrders();
+    localStorage.setItem('f4s_last_reset', today);
+  }
+}
+checkWeeklyReset();
 
 function saveEdit(id) {
   const price=parseFloat(document.getElementById('edit-price-'+id).value);
@@ -1329,6 +1376,11 @@ function renderDeliverySteps(activeIdx) {
 }
 
 // ── ADMIN DISPATCH ────────────────────────────────────
+// One-time reset of all orders (April 2026)
+if(!localStorage.getItem('f4s_reset_apr2026')) {
+  localStorage.removeItem('f4s_admin_orders');
+  localStorage.setItem('f4s_reset_apr2026', 'true');
+}
 let adminOrders = JSON.parse(localStorage.getItem('f4s_admin_orders') || '[]');
 
 function saveAdminOrders() {
